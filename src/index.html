@@ -102,27 +102,28 @@
     border-top: 1px solid #e1e1e1;
   	}
     .donate-btn {
-      display: inline-block;
-      margin: 0.5em 0;
-      padding: 0.5em 1.5em;
-      background: #136c2c; /* Improved contrast */
-      color: #fff;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 6px rgba(33, 150, 83, 0.12);
-      border: none;
-      transition: background .2s, box-shadow .2s;
-    }
-    .donate-btn:focus,
-    .donate-btn:hover {
-      background: #0b3e16;
-      color: #fff;
-      outline: 2px solid #00b300;
-      box-shadow: 0 4px 12px rgba(33, 150, 83, 0.18);     
-    }
+  	display: inline-block;
+  	margin: 0.5em 0;
+	  padding: 0.5em 1.5em;
+  	background: #2a7e32;
+  	color: #fff;
+  	border-radius: 30px;
+  	text-decoration: none;
+  	font-weight: bold;
+  	font-size: 1.1rem;
+  	letter-spacing: 0.5px;
+  	box-shadow: 0 2px 6px rgba(33, 150, 83, 0.12);
+  	border: none;
+  	transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.18s, outline 0.18s;
+  	}
+	  .donate-btn:focus,
+	  .donate-btn:hover {
+  	transform: scale(1.05);
+	  box-shadow: 0 4px 20px rgba(33, 150, 83, 0.23);
+  	outline: 2px solid #00b300;
+	  background: #136c2c;
+  	color: #fff;
+	  }
     @media (max-width: 600px) {
       .steps, .credits { padding: 1rem; }
       h1 { font-size: 1.5rem; }
