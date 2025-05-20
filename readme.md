@@ -80,4 +80,4 @@ If you appreciate this project and want to support its development, consider mak
 
 [![Support the Project](https://img.shields.io/badge/Support%20the%20Project-Donate-brightgreen)](https://coindrop.to/tecnik)
 
-![Speed Test](./img/speedtest.png)
+![Speed Test](assets/img/speedtest.png)
