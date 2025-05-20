@@ -38,7 +38,7 @@ The workflow in `.github/workflows/deploy.yml` runs every time you update `src/i
   - Checks out your code  
   - Sets up Node.js  
   - Installs dependencies  
-  - Runs the `optimise.js` script (via `npm run minify`)
+  - Runs the `optimise.js` script (via `npm run optimise`)
 - 🚀 **Auto-commit:**  
   - Commits the optimized files (`index.html`, `assets/style.min.css`, `assets/script.min.js`) automatically
 
