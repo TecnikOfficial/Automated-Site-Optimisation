@@ -24,7 +24,7 @@ The `optimise.js` script helps make your website faster and more efficient by au
    - Optimized `index.html`, `assets/style.min.css`, and `assets/script.min.js`
 
 > ⚠️ **Note:**  
-> For `optimise.js` to work, put all HTML, CSS (in a `<style>` tag), and JS (in a `<script>` tag) inline inside `src/index.html`.
+> For `optimise.js` to work, put all HTML, CSS (in a `<style>` tag), and JS (in a `<script>` tag) inline inside `src/index.html`.<br>
 > (Optional) Attach functions to the `window` object in JS to make them globally accessible and prevent them from being mistakenly removed by tree shaking process.
 ---
 
