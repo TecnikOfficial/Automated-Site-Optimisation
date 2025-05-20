@@ -12,9 +12,23 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://github.com/TecnikOfficial/Automated-Site-Optimisation">
   <meta property="og:image" content="https://em-content.zobj.net/source/microsoft-teams/337/rocket_1f680.png">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://em-content.zobj.net; font-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none';">
+
+  <!--
+    NOTE: The following security headers CANNOT be set via HTML or meta tags on GitHub Pages.
+    If you need Strict-Transport-Security (HSTS), X-Frame-Options, or proper CSP/COOP headers,
+    use a CDN like Cloudflare or move to a host where you control HTTP headers.
+    Example for HSTS:
+      Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+    Example for X-Frame-Options:
+      X-Frame-Options: DENY
+    Example for COOP:
+      Cross-Origin-Opener-Policy: same-origin
+    Example for CSP frame-ancestors:
+      Content-Security-Policy: frame-ancestors 'none';
+    These must be set as HTTP headers, not meta tags.
+  -->
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://em-content.zobj.net; font-src 'self'; connect-src 'self'; object-src 'none';">
   <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' font-size='90'>🚀</text></svg>">
   <style>
     body {
@@ -32,7 +46,7 @@
     }
     h1 {
       margin: 0 0 0.5rem 0;
-      font-size: 2.2rem;
+      font-size: 2.4rem;
     }
     .steps {
       max-width: 600px;
@@ -84,25 +98,34 @@
       padding: 1.5rem 1rem;
       color: #000;
       background: #f0f3f7;
-      font-size: 0.9rem;
+      font-size: 1.0rem;
       border-top: 1px solid #e1e1e1;
     }
     .donate-btn {
       display: inline-block;
       margin: 0.5em 0;
       padding: 0.5em 1.5em;
-      background: #219653;
+      background: #136c2c; /* Improved contrast */
       color: #fff;
       border-radius: 30px;
       text-decoration: none;
       font-weight: bold;
-      transition: background .2s;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 6px rgba(33, 150, 83, 0.12);
+      border: none;
+      transition: background .2s, box-shadow .2s;
     }
+    .donate-btn:focus,
     .donate-btn:hover {
-      background: #2ecc71;
+      background: #0b3e16;
+      color: #fff;
+      outline: 2px solid #00b300;
+      box-shadow: 0 4px 12px rgba(33, 150, 83, 0.18);     
     }
     @media (max-width: 600px) {
       .steps, .credits { padding: 1rem; }
+      h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -121,9 +144,9 @@
     <div class="step"><span class="emoji">🧼</span> <b>Minifies the HTML</b>: Compresses the HTML for faster loading.</div>
     <div class="step"><span class="emoji">📦</span> <b>Final Output</b>: All files are ready for production!</div>
     <div class="note">
-  ⚠️ <b>Note:</b> All HTML, CSS, and JS must be inline in <code>src/index.html</code> for <b>optimise.js</b> to process them.<br>
-  <b>Tip:</b> (Optional) Attach functions to the <code>window</code> object in JS code to prevent them from being mistakenly removed by tree shaking process.
-</div>
+      ⚠️ <b>Note:</b> All HTML, CSS, and JS must be inline in <code>src/index.html</code> for <b>optimise.js</b> to process them.<br>
+      <b>Tip:</b> (Optional) Attach functions to the <code>window</code> object in JS code to prevent them from being mistakenly removed by tree shaking process.
+    </div>
   </section>
   <section class="steps" style="margin-top:1rem;">
     <div class="step"><span class="emoji">🛠️</span>
@@ -152,33 +175,29 @@
   </section>
   <footer>
     💖 Support the Project:
-    <a class="donate-btn" href="https://coindrop.to/tecnik" target="_blank">Donate</a>
+    <a class="donate-btn" href="https://coindrop.to/tecnik" target="_blank" rel="noopener">Donate</a>
   </footer>
   <script>
     // Demo: Show a message when page is loaded and test JS minification
-document.addEventListener('DOMContentLoaded', function() {
-  let isMinified = true;
-
-  // Check for inline <style> or <script> (excluding this script itself)
-  const inlineScript = Array.from(document.querySelectorAll('script'))
-    .some(s => !s.src && !s.textContent.includes('optimise.js is working!'));
-  const inlineStyle = document.querySelector('style') !== null;
-
-  // Check if linked CSS and JS are minified
-  const cssMin = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-    .some(link => /\.min\.css(\?|#|$)/.test(link.href));
-  const jsMin = Array.from(document.querySelectorAll('script[src]'))
-    .some(s => /\.min\.js(\?|#|$)/.test(s.src));
-
-  // True if no inline script/style and both .min.js and .min.css are used
-  if (inlineScript || inlineStyle || !cssMin || !jsMin) isMinified = false;
-
-  const footer = document.querySelector('footer');
-  footer.insertAdjacentHTML(
-    'beforeend',
-    `<br><span style="color:${isMinified ? '#0057b8' : '#d32f2f'}">${isMinified ? '🟢 optimise.js is working!' : '🔴 optimise.js is not working!'}</span>`
-  );
-});
+    document.addEventListener('DOMContentLoaded', function() {
+      let isMinified = true;
+      // Check for inline <style> or <script> (excluding this script itself)
+      const inlineScript = Array.from(document.querySelectorAll('script'))
+        .some(s => !s.src && !s.textContent.includes('optimise.js is working!'));
+      const inlineStyle = document.querySelector('style') !== null;
+      // Check if linked CSS and JS are minified
+      const cssMin = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+        .some(link => /\.min\.css(\?|#|$)/.test(link.href));
+      const jsMin = Array.from(document.querySelectorAll('script[src]'))
+        .some(s => /\.min\.js(\?|#|$)/.test(s.src));
+      // True if no inline script/style and both .min.js and .min.css are used
+      if (inlineScript || inlineStyle || !cssMin || !jsMin) isMinified = false;
+      const footer = document.querySelector('footer');
+      footer.insertAdjacentHTML(
+        'beforeend',
+        `<br><span style="color:${isMinified ? '#0057b8' : '#d32f2f'}">${isMinified ? '🟢 optimise.js is working!' : '🔴 optimise.js is not working!'}</span>`
+      );
+    });
   </script>
 </body>
 </html>
