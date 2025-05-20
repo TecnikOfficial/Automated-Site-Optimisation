@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    versioning-strategy: "auto"
+    directory: "/" # Location of package.json
+    schedule:
+      interval: "weekly" # Check for updates weekly

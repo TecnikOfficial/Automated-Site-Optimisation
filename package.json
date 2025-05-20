@@ -1,0 +1,19 @@
+{
+  "name": "site-name",
+  "version": "1.0.0",
+  "description": "Automated build for extracting and optimizing inline CSS & JS from index.html.",
+  "main": "optimise.js",
+  "scripts": {
+    "build": "node optimise.js",
+    "optimise": "node optimise.js"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "esbuild": "^0.25.4",
+    "html-minifier-terser": "^7.2.0",
+    "jsdom": "^26.1.0",
+    "purgecss": "^7.0.2"
+  },
+  "author": "tecnikofficial",
+  "license": "ISC"
+}

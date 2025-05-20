@@ -1,0 +1,38 @@
+name: Build and Optimise Site
+
+on:
+  push:
+    paths:
+      - 'src/index.html'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-optimise:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup latest stable Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'node' # Always uses the latest stable, not just LTS
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and optimise
+        run: npm run optimise
+
+      - name: Commit and push optimised assets
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html assets/style.min.css assets/script.min.js
+          git commit -m "Auto-update optimised files from src/index.html" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
