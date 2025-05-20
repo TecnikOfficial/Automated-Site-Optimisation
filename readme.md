@@ -2,7 +2,7 @@
 
 optimise.js helps you build fast, efficient static sites with automated HTML, CSS, and JS optimization and deployment.
 
-## 🚀 How optimise.js Works
+## 🚀 How optimise.js Works - [Watch Tutorial](https://youtube.com/@TecnikOfficial)
 
 The `optimise.js` script helps make your website faster and more efficient by automatically optimizing your HTML, CSS, and JavaScript files:
 
