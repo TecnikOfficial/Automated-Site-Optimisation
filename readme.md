@@ -12,7 +12,7 @@ The `optimise.js` script helps make your website faster and more efficient by au
    - 🌐 Adds browser prefixes
    - ✂️ Minifies CSS and saves as `assets/style.min.css`
 3. ⚡ **Processes JavaScript:**
-   - ✂️ Minifies and bundles JS
+   - ✂️ Minifies and bundles JS while removing dead js code.
    - 💾 Saves as `assets/script.min.js`
 4. 🏗️ **Updates the HTML:**
    - 🧹 Removes old `<style>` and `<script>` tags
@@ -64,9 +64,8 @@ And with Dependabot, keeping your site secure and up-to-date is as simple as cli
 This project is powered by these open-source tools:
 
 - [esbuild](https://www.npmjs.com/package/esbuild) — Ultra-fast bundler and minifier for JavaScript and CSS.
-- [postcss](https://www.npmjs.com/package/postcss) — Tool for transforming CSS with JavaScript.
+- [purgecss](https://www.npmjs.com/package/purgecss) — Removes unused CSS for optimized production builds.
 - [autoprefixer](https://www.npmjs.com/package/autoprefixer) — PostCSS plugin to parse CSS and add vendor prefixes automatically.
-- [@fullhuman/postcss-purgecss](https://www.npmjs.com/package/@fullhuman/postcss-purgecss) — Removes unused CSS.
 - [html-minifier-terser](https://www.npmjs.com/package/html-minifier-terser) — Minifies and compresses HTML files.
 - [Node.js](https://nodejs.org/) — JavaScript runtime powering the script.
 - [GitHub Actions](https://github.com/features/actions) — For workflow automation and deployment.
