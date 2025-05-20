@@ -41,14 +41,17 @@ The workflow in `.github/workflows/deploy.yml` runs every time you update `src/i
   - Runs the `optimise.js` script (via `npm run optimise`)
 - 🚀 **Auto-commit:**  
   - Commits the optimized files (`index.html`, `assets/style.min.css`, `assets/script.min.js`) automatically
-
----
-
-## 🔒 Automatic Dependency Updates
-
+  - 
 🔄 **Dependabot** is enabled!
 Whenever a new version of a dependency is released, Dependabot creates a pull request to update it.  
 All you have to do is **merge the pull request**—your site always stays updated and secure.
+
+---
+
+## 🗓️ Planned Updates
+
+🖼️ **Image Optimisation** implementation
+Ability to auto minify images in `assets` folder
 
 ---
 
