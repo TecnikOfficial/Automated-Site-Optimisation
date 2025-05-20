@@ -12,7 +12,7 @@ The `optimise.js` script helps make your website faster and more efficient by au
    - 🌐 Adds browser prefixes
    - ✂️ Minifies CSS and saves as `assets/style.min.css`
 3. ⚡ **Processes JavaScript:**
-   - ✂️ Minifies and bundles JS
+   - ✂️ Minifies and bundles JS while removing dead js code.
    - 💾 Saves as `assets/script.min.js`
 4. 🏗️ **Updates the HTML:**
    - 🧹 Removes old `<style>` and `<script>` tags
