@@ -105,12 +105,12 @@
   <section class="steps">
     <div class="step"><span class="emoji">📝</span> <b>Reads the Source HTML</b>: Looks for your CSS and JavaScript in src/index.html.</div>
     <div class="step"><span class="emoji">🎨</span> <b>Extracts & Processes CSS</b>: Removes unused CSS, adds prefixes, and minifies.</div>
-    <div class="step"><span class="emoji">⚡</span> <b>Processes JavaScript</b>: Bundles and minifies your JS code.</div>
+    <div class="step"><span class="emoji">⚡</span> <b>Processes JavaScript</b>: Bundles and minifies your JS code. Removes dead code.</div>
     <div class="step"><span class="emoji">🏗️</span> <b>Updates the HTML</b>: Inserts references to minified files.</div>
     <div class="step"><span class="emoji">🧼</span> <b>Minifies the HTML</b>: Compresses the HTML for faster loading.</div>
     <div class="step"><span class="emoji">📦</span> <b>Final Output</b>: All files are ready for production!</div>
     <div class="note">
-      ⚠️ <b>Note:</b> All HTML, CSS, and JS must be inline in <code>src/index.html</code> for <b>optimise.js</b> to process them.
+      ⚠️ <b>Note:</b> All HTML, CSS, and JS must be inline in <code>src/index.html</code> for <b>optimise.js</b> to process them. (Optional) Attach functions to the `window` object in JavaScript to make them globally accessible and prevent them from being removed by tree shaking, allowing them to be called from anywhere, including HTML event attributes.
     </div>
   </section>
   <section class="steps" style="margin-top:1rem;">
