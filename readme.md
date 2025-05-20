@@ -1,4 +1,4 @@
-# optimise.js - Automated Site Optimisation🚀
+# optimise.js - Automated Site Optimiser🚀
 
 optimise.js helps you build fast, efficient static sites with automated HTML, CSS, and JS optimization and deployment.
 
