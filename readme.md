@@ -80,4 +80,4 @@ If you appreciate this project and want to support its development, consider mak
 
 [![Support the Project](https://img.shields.io/badge/Support%20the%20Project-Donate-brightgreen)](https://coindrop.to/tecnik)
 
-[![Speed Test](assets/img/speedtest.png)](https://pagespeed.web.dev/analysis/https-tecnikofficial-github-io-Automated-Site-Optimisation/)
+[![Speed Test](assets/img/speedtest.png)](https://pagespeed.web.dev/analysis?url=https://tecnikofficial.github.io/Automated-Site-Optimisation)
