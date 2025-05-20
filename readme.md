@@ -50,7 +50,7 @@ All you have to do is **merge the pull request**—your site always stays update
 
 ## 🗓️ Planned Updates
 
-🖼️ **Image Optimisation** implementation
+🖼️ **Image Optimisation** - 
 Ability to auto minify images in `assets` folder
 
 ---
