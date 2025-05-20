@@ -64,7 +64,7 @@ And with Dependabot, keeping your site secure and up-to-date is as simple as cli
 This project is powered by these open-source tools:
 
 - [esbuild](https://www.npmjs.com/package/esbuild) — Ultra-fast bundler and minifier for JavaScript and CSS.
-- [postcss](https://www.npmjs.com/package/postcss) — Tool for transforming CSS with JavaScript.
+- [purgecss](https://www.npmjs.com/package/purgecss) — Removes unused CSS for optimized production builds.
 - [autoprefixer](https://www.npmjs.com/package/autoprefixer) — PostCSS plugin to parse CSS and add vendor prefixes automatically.
 - [@fullhuman/postcss-purgecss](https://www.npmjs.com/package/@fullhuman/postcss-purgecss) — Removes unused CSS.
 - [html-minifier-terser](https://www.npmjs.com/package/html-minifier-terser) — Minifies and compresses HTML files.
