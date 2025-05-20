@@ -79,4 +79,5 @@ Special thanks to the open-source community!
 If you appreciate this project and want to support its development, consider making a donation:
 
 [![Support the Project](https://img.shields.io/badge/Support%20the%20Project-Donate-brightgreen)](https://coindrop.to/tecnik)
-![Speed Test](/img/speedtest.png)
+
+![Speed Test](./img/speedtest.png)
