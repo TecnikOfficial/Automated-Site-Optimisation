@@ -1,63 +1,18 @@
-[2025-05-21 08:35:50 PM] Dependency loaded: jsdom - SUCCESS
-[2025-05-21 08:35:50 PM] Dependency loaded: purgecss - SUCCESS
-[2025-05-21 08:35:50 PM] Dependency loaded: esbuild - SUCCESS
-[2025-05-21 08:35:50 PM] Dependency loaded: postcss - SUCCESS
-[2025-05-21 08:35:51 PM] Dependency loaded: autoprefixer - SUCCESS
-[2025-05-21 08:35:51 PM] Dependency loaded: html-minifier-terser - SUCCESS
-[2025-05-21 08:35:51 PM] Dependency loaded: diff - SUCCESS
-[2025-05-21 08:35:51 PM] Assets directory checked/created.
-[2025-05-21 08:35:51 PM] Read src/index.html - SUCCESS
-[2025-05-21 08:35:51 PM] --- Build started ---
-[2025-05-21 08:35:51 PM] CSS processing started.
-[2025-05-21 08:35:52 PM] PURGECSS REMOVED CSS BLOCK:
-.loading-content {
-color: #fff;
-font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
-font-size: 3rem;
-}
-[2025-05-21 08:35:52 PM] PURGECSS REMOVED CSS BLOCK:
-.slider {
-position: relative; /* Changed from absolute to relative for better scrolling */
-margin-top: 10vh; /* Reduced from 35vh to 10vh to move content up */
-left: 50%;
-transform: translateX(-50%);
-text-align: center;
-z-index: 2;
-min-height: 400px;
-pointer-events: auto;
-width: 90%;
-max-width: 900px; /* Reduced from 1200px to 900px for better desktop view */
-padding-bottom: 100px;
-}
-[2025-05-21 08:35:52 PM] PURGECSS REMOVED CSS BLOCK:
-.text.three-d, .three-d {
-font-family: 'Courier New', Courier, monospace;
-font-weight: bold;
-letter-spacing: 1px;
-line-height: 1.2; /* Set a consistent line height */
-min-height: 80px; 
-margin-bottom: 10px; /* Keep the same margin as before */
-padding: 0;
-font-size: 4rem;
-color: #fff;
-text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5), 2px 2px 0 rgba(0, 0, 0, 0.5),
-  3px 3px 0 rgba(0, 0, 0, 0.5), 4px 4px 0 rgba(0, 0, 0, 0.5),
-  5px 5px 0 rgba(0, 0, 0, 0.5);
--webkit-text-stroke: 1px #000;
-animation: float 3s ease-in-out infinite;
-transition: color 0.3s ease;
-position: relative;
-z-index: 1;
-}
-[2025-05-21 08:35:52 PM] CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.
-[2025-05-21 08:35:52 PM] CSS processed & minified completely. Total saved: 1.99 KB.
-[2025-05-21 08:35:52 PM] JS processing started.
-[2025-05-21 08:35:52 PM] JS TREE SHAKING REMOVED CODE BLOCK (unminified):
-function openNotificationPanel() {
-    const notificationPanel = document.getElementById("if this blocks means tree shaking worked");
-    if (!notificationPanel) return;
-  }
-[2025-05-21 08:35:52 PM] JS Tree shaking complete: Unused JS code WAS REMOVED.
-[2025-05-21 08:35:52 PM] JS processed & minified completely. Total saved: 0.73 KB.
-[2025-05-21 08:35:52 PM] HTML minified and index.html written successfully. You saved 0.99 KB.
-[2025-05-21 08:35:52 PM] --- Build completed successfully ---
+[2025-05-21 08:49:04 PM] Dependency loaded: jsdom - SUCCESS
+[2025-05-21 08:49:05 PM] Dependency loaded: purgecss - SUCCESS
+[2025-05-21 08:49:05 PM] Dependency loaded: esbuild - SUCCESS
+[2025-05-21 08:49:05 PM] Dependency loaded: postcss - SUCCESS
+[2025-05-21 08:49:08 PM] Dependency loaded: autoprefixer - SUCCESS
+[2025-05-21 08:49:09 PM] Dependency loaded: html-minifier-terser - SUCCESS
+[2025-05-21 08:49:10 PM] Dependency loaded: diff - SUCCESS
+[2025-05-21 08:49:10 PM] Assets directory checked/created.
+[2025-05-21 08:49:10 PM] Read src/index.html - SUCCESS
+[2025-05-21 08:49:11 PM] --- Build started ---
+[2025-05-21 08:49:11 PM] CSS processing started.
+[2025-05-21 08:49:12 PM] CSS REMOVED: No unused CSS was removed by PurgeCSS.
+[2025-05-21 08:49:13 PM] CSS processed & minified completely. Total saved: 0.88 KB.
+[2025-05-21 08:49:13 PM] JS processing started.
+[2025-05-21 08:49:13 PM] JS Tree shaking complete: No unused JS code was found.
+[2025-05-21 08:49:13 PM] JS processed & minified completely. Total saved: 0.56 KB.
+[2025-05-21 08:49:13 PM] HTML minified and index.html written successfully. You saved 0.99 KB.
+[2025-05-21 08:49:13 PM] --- Build completed successfully ---
