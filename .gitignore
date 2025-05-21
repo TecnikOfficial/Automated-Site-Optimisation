@@ -7,10 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Build report logs
-build-report.log
-build-report-*.log
-
 # Temporary build files
 assets/purge-tmp.html
 assets/style-tmp.css
@@ -18,7 +14,6 @@ assets/temp-style.css
 assets/script-tmp.js
 assets/script.unmin.treeshake.js
 assets/script.unmin.nots.js
-
 
 node_modules
 dist
