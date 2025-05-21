@@ -82,11 +82,15 @@ async function processCSS() {
     const tempHtmlPath = path.join(ASSETS_DIR, 'purge-tmp.html');
     fs.writeFileSync(tempHtmlPath, domForPurge.serialize(), 'utf8');
 
-    // Run PurgeCSS
+    // Run PurgeCSS with improved extractor
     const purgeCSSResult = await new PurgeCSS().purge({
       content: [tempHtmlPath],
       css: [tempCssPath],
-      defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
+      // More robust extractor to handle more selector patterns
+      defaultExtractor: content =>
+        content.match(/[\w-/:%.#@]+(?<!:)/g) || [],
+      // Add safelist if you use dynamic classes (edit as needed)
+      // safelist: ['html', 'body', /^dynamic-/]
     });
 
     fs.unlinkSync(tempHtmlPath);
