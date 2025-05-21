@@ -48,6 +48,10 @@
       margin: 0 0 0.5rem 0;
       font-size: 2.4rem;
     }
+	test {
+      margin: 0 0 0.5rem 0;
+      font-size: 2.4rem;
+    }
     .steps {
       max-width: 600px;
       margin: 2rem auto;
@@ -56,6 +60,11 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       padding: 2rem;
     }
+	.texts {
+color: #0f0 !important;
+transform: rotate(90deg);
+transition: color 0.2s ease, transform 0.3s ease;
+}
     .step {
       display: flex;
       align-items: flex-start;
@@ -209,6 +218,16 @@
         `<br><span style="color:${isMinified ? '#0057b8' : '#d32f2f'}">${isMinified ? '🟢 optimise.js is working!' : '🔴 optimise.js is not working!'}</span>`
       );
     });
+	function copyDiscord() {
+navigator.clipboard.writeText("tecnik.gg")
+  .then(() => {
+    showToast("Discord username copied to clipboard!");
+  })
+  .catch(err => {
+    console.error("Failed to copy: ", err);
+    showToast("Failed to copy Discord username");
+  });
+}
   </script>
 </body>
 </html>

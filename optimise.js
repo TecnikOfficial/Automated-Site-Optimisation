@@ -5,11 +5,19 @@ const LOG_FILE = path.join(__dirname, 'build-report.log');
 if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
 
 function logReport(message) {
-  const timestamp = new Date().toISOString();
+  const now = new Date();
+  let hours = now.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const timestamp = `${now.getFullYear()}-${month}-${day} ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
   fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`, 'utf8');
 }
 
-// Dependency loader with logging
 function requireWithLog(dep) {
   try {
     const pkg = require(dep);
@@ -21,7 +29,6 @@ function requireWithLog(dep) {
   }
 }
 
-// Load dependencies
 const { JSDOM } = requireWithLog('jsdom');
 const { PurgeCSS } = requireWithLog('purgecss');
 const esbuild = requireWithLog('esbuild');
@@ -30,19 +37,16 @@ const autoprefixer = requireWithLog('autoprefixer');
 const { minify: htmlMinify } = requireWithLog('html-minifier-terser');
 const cssDiff = requireWithLog('diff');
 
-// Paths
 const SRC_HTML = path.join(__dirname, 'src', 'index.html');
 const OUT_HTML = path.join(__dirname, 'index.html');
 const ASSETS_DIR = path.join(__dirname, 'assets');
 const OUT_CSS = path.join(ASSETS_DIR, 'style.min.css');
 const OUT_JS = path.join(ASSETS_DIR, 'script.min.js');
 
-// Ensure assets dir exists
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR);
 
 logReport('Assets directory checked/created.');
 
-// Read src/index.html
 let htmlContent;
 try {
   htmlContent = fs.readFileSync(SRC_HTML, 'utf8');
@@ -64,21 +68,41 @@ const js = scriptTag ? scriptTag.textContent : '';
 async function processCSS() {
   try {
     logReport('CSS processing started.');
-    // Purge unused CSS based on HTML content
+    const originalSize = Buffer.byteLength(css, 'utf8');
+
+    // Write extracted CSS to temp file
+    const tempCssPath = path.join(ASSETS_DIR, 'temp-style.css');
+    fs.writeFileSync(tempCssPath, css, 'utf8');
+
+    // Remove <style> from DOM and write new HTML to temp file for PurgeCSS
+    const domForPurge = new JSDOM(htmlContent);
+    const purgeDoc = domForPurge.window.document;
+    const purgeStyle = purgeDoc.querySelector('style');
+    if (purgeStyle) purgeStyle.remove();
     const tempHtmlPath = path.join(ASSETS_DIR, 'purge-tmp.html');
-    fs.writeFileSync(tempHtmlPath, dom.serialize(), 'utf8');
+    fs.writeFileSync(tempHtmlPath, domForPurge.serialize(), 'utf8');
+
+    // Run PurgeCSS
     const purgeCSSResult = await new PurgeCSS().purge({
       content: [tempHtmlPath],
-      css: [{ raw: css }],
+      css: [tempCssPath],
       defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
     });
+
     fs.unlinkSync(tempHtmlPath);
+    fs.unlinkSync(tempCssPath);
 
     const purgedCSS = purgeCSSResult[0] ? purgeCSSResult[0].css : css;
 
-    // Check if any CSS was removed
+    // Log removed CSS code blocks (diagnostic)
     const diff = cssDiff.diffLines(css, purgedCSS);
-    const cssRemoved = diff.some(part => part.removed);
+    let cssRemoved = false;
+    diff.forEach(part => {
+      if (part.removed && part.value.trim()) {
+        cssRemoved = true;
+        logReport('PURGECSS REMOVED CSS BLOCK:\n' + part.value.trim());
+      }
+    });
     if (cssRemoved) {
       logReport('CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.');
     } else {
@@ -88,13 +112,13 @@ async function processCSS() {
     // Autoprefixer via PostCSS
     const result = await postcss([autoprefixer]).process(purgedCSS, { from: undefined });
 
-    // Write to temp CSS file
-    const tempCssPath = path.join(ASSETS_DIR, 'style-tmp.css');
-    fs.writeFileSync(tempCssPath, result.css, 'utf8');
+    // Write post-processed CSS to a temp file for minification
+    const minifyInputPath = path.join(ASSETS_DIR, 'style-tmp.css');
+    fs.writeFileSync(minifyInputPath, result.css, 'utf8');
 
     // Minify CSS using esbuild
     await esbuild.build({
-      entryPoints: [tempCssPath],
+      entryPoints: [minifyInputPath],
       outfile: OUT_CSS,
       minify: true,
       bundle: false,
@@ -102,8 +126,12 @@ async function processCSS() {
       logLevel: 'silent'
     });
 
-    fs.unlinkSync(tempCssPath);
-    logReport('CSS processed and minified successfully.');
+    fs.unlinkSync(minifyInputPath);
+
+    // Calculate actual KB saved
+    const minifiedSize = fs.statSync(OUT_CSS).size;
+    const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
+    logReport(`CSS processed & minified completely. Total saved: ${totalSavedKB} KB.`);
   } catch (err) {
     logReport(`CSS processing FAILED: ${err.message}`);
     throw err;
@@ -113,6 +141,8 @@ async function processCSS() {
 async function processJS() {
   try {
     logReport('JS processing started.');
+    const originalSize = Buffer.byteLength(js, 'utf8');
+
     // Write JS to temp file for esbuild input
     const tempJsPath = path.join(ASSETS_DIR, 'script-tmp.js');
     fs.writeFileSync(tempJsPath, js, 'utf8');
@@ -148,11 +178,6 @@ async function processJS() {
       logLevel: 'silent'
     });
 
-    // Compare file sizes (unminified)
-    const sizeWithTS = fs.statSync(UNMIN_JS_TS).size;
-    const sizeNoTS = fs.statSync(UNMIN_JS_NOTS).size;
-    logReport(`JS Tree Shaking: With tree shaking (unminified): ${sizeWithTS} bytes, without: ${sizeNoTS} bytes.`);
-
     // DIFF BLOCK: Log removed code (unminified)
     const tsContent = fs.readFileSync(UNMIN_JS_TS, 'utf8');
     const notsContent = fs.readFileSync(UNMIN_JS_NOTS, 'utf8');
@@ -165,9 +190,9 @@ async function processJS() {
       }
     });
     if (jsCodeRemoved) {
-      logReport('JS Tree Shaking: Unused JS code WAS REMOVED by tree shaking.');
+      logReport('JS Tree shaking complete: Unused JS code WAS REMOVED.');
     } else {
-      logReport('JS Tree Shaking: No unused JS code was removed by tree shaking.');
+      logReport('JS Tree shaking complete: No unused JS code was found.');
     }
 
     // Now minify only the tree-shaken JS for production
@@ -180,12 +205,16 @@ async function processJS() {
       logLevel: 'silent'
     });
 
+    // Calculate actual KB saved
+    const minifiedSize = fs.statSync(OUT_JS).size;
+    const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
+
     // Clean up
     fs.unlinkSync(tempJsPath);
     fs.unlinkSync(UNMIN_JS_TS);
     fs.unlinkSync(UNMIN_JS_NOTS);
 
-    logReport('JS processed, minified, and tree-shaken successfully.');
+    logReport(`JS processed & minified completely. Total saved: ${totalSavedKB} KB.`);
   } catch (err) {
     logReport(`JS processing FAILED: ${err.message}`);
     throw err;
@@ -214,6 +243,7 @@ async function processJS() {
     document.body.appendChild(script);
 
     // Minify HTML
+    const originalSize = Buffer.byteLength(dom.serialize(), 'utf8');
     const finalHtml = await htmlMinify(dom.serialize(), {
       collapseWhitespace: true,
       removeComments: true,
@@ -221,9 +251,12 @@ async function processJS() {
       minifyJS: false
     });
 
+    const minifiedSize = Buffer.byteLength(finalHtml, 'utf8');
+    const savedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
+
     // Write output HTML
     fs.writeFileSync(OUT_HTML, finalHtml, 'utf8');
-    logReport('HTML minified and index.html written successfully.');
+    logReport(`HTML minified and index.html written successfully. You saved ${savedKB} KB.`);
 
     logReport('--- Build completed successfully ---');
     console.log('Build complete: index.html and assets/style.min.css + script.min.js created/updated.\nSee build-report.log for details.');
