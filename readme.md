@@ -57,8 +57,7 @@ Ability to auto minify images in `assets` folder
 
 🛠️ **In simple terms:**  
 You can easily edit your site’s code in a formatted, human-readable form inside `src/index.html`.  
-Whenever you save and push your changes, your site will be automatically deployed with all code compressed and minified for better performance! 🚀  
-And with Dependabot, keeping your site secure and up-to-date is as simple as clicking "Merge"! ✅
+If you run into build errors or want to see what’s happening behind the scenes, you can always check the `build.logs` for more information.
 
 ---
 
