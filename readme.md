@@ -9,7 +9,7 @@ The `optimise.js` script helps make your website faster and more efficient by au
 1. 📝 **Reads the Source HTML:** Looks for CSS and JS in `src/index.html`.
 2. 🎨 **Extracts and Processes CSS:**
    - 🚮 Removes unused CSS rules
-   - 🌐 Adds browser prefixes
+   - 🌐 Adds prefixes (Better Brower compatibility)
    - ✂️ Minifies CSS and saves as `assets/style.min.css`
 3. ⚡ **Processes JavaScript:**
    - ✂️ Minifies and bundles JS while removing dead js code.
@@ -67,7 +67,7 @@ This project is powered by these open-source tools:
 
 - [esbuild](https://www.npmjs.com/package/esbuild) — Ultra-fast bundler and minifier for JavaScript and CSS.
 - [purgecss](https://www.npmjs.com/package/purgecss) — Removes unused CSS for optimized production builds.
-- [autoprefixer](https://www.npmjs.com/package/autoprefixer) — PostCSS plugin to parse CSS and add vendor prefixes automatically.
+- [lightningcss](https://www.npmjs.com/package/lightningcss) — An extremely fast CSS parser, transformer, minifier and prefixer.
 - [html-minifier-terser](https://www.npmjs.com/package/html-minifier-terser) — Minifies and compresses HTML files.
 - [Node.js](https://nodejs.org/) — JavaScript runtime powering the script.
 - [GitHub Actions](https://github.com/features/actions) — For workflow automation and deployment.

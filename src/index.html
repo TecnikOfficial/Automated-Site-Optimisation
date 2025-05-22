@@ -49,32 +49,7 @@
       font-size: 2.4rem;
     }
 
-	.project-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 20px;
-margin-top: 20px;
-/* Add these properties to fix the scrolling glitch */
-position: relative;
-will-change: transform;
-transform: translateZ(0);
-}
-
-.project-card {
-  background-color: rgba(0, 50, 0, 0.2); /* Light green tint with transparency */
-  backdrop-filter: blur(3px); /* Add blur effect */
-  border: 2px solid rgba(0, 255, 0, 0.3);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  flex-direction: column;
-  /* Add these properties to fix the scrolling glitch */
-  height: 100%;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.testiju {
+.uselesscsstest {
 height: 100%;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -206,8 +181,8 @@ height: 100%;
     Powered by:
     <ul>
       <li><a href="https://www.npmjs.com/package/esbuild" target="_blank">esbuild</a> — Bundles and minifies JS &amp; CSS</li>
-      <li><a href="https://www.npmjs.com/package/@fullhuman/postcss-purgecss" target="_blank">@fullhuman/postcss-purgecss</a> — Removes unused CSS</li>
-      <li><a href="https://www.npmjs.com/package/autoprefixer" target="_blank">autoprefixer</a> — Adds CSS prefixes</li>   
+      <li><a href="https://www.npmjs.com/package/purgecss" target="_blank">purgecss</a> — Removes unused CSS</li>
+      <li><a href="https://www.npmjs.com/package/lightningcss" target="_blank">lightningcss</a> — Adds prefixes and minifies CSS</li>   
       <li><a href="https://www.npmjs.com/package/html-minifier-terser" target="_blank">html-minifier-terser</a> — Minifies HTML</li>
       <li><a href="https://nodejs.org/" target="_blank">Node.js</a> — JavaScript runtime</li>
       <li><a href="https://github.com/features/actions" target="_blank">GitHub Actions</a> — Workflow automation</li>
@@ -243,9 +218,9 @@ height: 100%;
         `<br><span style="color:${isMinified ? '#0057b8' : '#d32f2f'}">${isMinified ? '🟢 optimise.js is working!' : '🔴 optimise.js is not working!'}</span>`
       );
     });
-	// Function to change the text
+	// useless js code test
 function changeText() {
-const textElement = document.getElementById("slider-text");
+const textElement = document.getElementById("useless-js");
 currentTextIndex = (currentTextIndex < textOptions.length) ? currentTextIndex : 0;
 textElement.textContent = textOptions[currentTextIndex];
 currentTextIndex++;
