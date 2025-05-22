@@ -9,7 +9,7 @@ The `optimise.js` script helps make your website faster and more efficient by au
 1. 📝 **Reads the Source HTML:** Looks for CSS and JS in `src/index.html`.
 2. 🎨 **Extracts and Processes CSS:**
    - 🚮 Removes unused CSS rules
-   - 🌐 Adds browser prefixes
+   - 🌐 Adds prefixes (Better Brower compatibility)
    - ✂️ Minifies CSS and saves as `assets/style.min.css`
 3. ⚡ **Processes JavaScript:**
    - ✂️ Minifies and bundles JS while removing dead js code.
