@@ -1,13 +1,34 @@
-[2025-05-22 04:34:55 PM] Dependency loaded: jsdom - SUCCESS
-[2025-05-22 04:34:55 PM] Dependency loaded: esbuild - SUCCESS
-[2025-05-22 04:34:55 PM] Dependency loaded: purgecss - SUCCESS
-[2025-05-22 04:34:55 PM] Dependency loaded: html-minifier-terser - SUCCESS
-[2025-05-22 04:34:55 PM] Dependency loaded: diff - SUCCESS
-[2025-05-22 04:34:55 PM] Assets directory checked/created.
-[2025-05-22 04:34:55 PM] Read src/index.html - SUCCESS
-[2025-05-22 04:34:56 PM] --- Build started ---
-[2025-05-22 04:34:56 PM] CSS processing started.
-[2025-05-22 04:34:56 PM] PURGECSS REMOVED CSS BLOCK:
+
+========== DEPENDENCY LOADING ==========
+[2025-05-22 12:54:29] [SUCCESS] Dependency loaded: jsdom
+[2025-05-22 12:54:29] [SUCCESS] Dependency loaded: esbuild
+[2025-05-22 12:54:30] [SUCCESS] Dependency loaded: purgecss
+[2025-05-22 12:54:30] [SUCCESS] Dependency loaded: html-minifier-terser
+[2025-05-22 12:54:30] [SUCCESS] Dependency loaded: diff
+[2025-05-22 12:54:30] [SUCCESS] Dependency loaded: lightningcss
+---- Step completed in 2.72s: All dependencies loaded.
+
+========== ASSET DIRECTORY CHECK ==========
+[2025-05-22 12:54:30] [INFO] Assets directory exists or created.
+---- Step completed in 0.00s: Asset directory check done.
+
+========== READ SOURCE HTML ==========
+[2025-05-22 12:54:30] [INFO] Read src/index.html - SUCCESS
+---- Step completed in 0.00s: Source HTML read.
+
+========== EXTRACT INLINE CSS ==========
+[2025-05-22 12:54:30] [INFO] Extracted CSS from 1 <style> tag(s).
+---- Step completed in 0.01s: Inline CSS extraction done.
+
+========== GENERATE TEMP FILES FOR PURGECSS ==========
+[2025-05-22 12:54:31] [INFO] Temporary HTML and CSS files for PurgeCSS created.
+---- Step completed in 0.12s: Temp file generation done.
+
+========== BUILD START ==========
+
+========== PURGE UNUSED CSS (PurgeCSS) ==========
+[2025-05-22 12:54:31] [INFO] Running PurgeCSS to remove unused CSS selectors...
+[REMOVED] CSS code removed:
 .project-grid {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -38,17 +59,35 @@ height: 100%;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
-[2025-05-22 04:34:56 PM] CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.
-[2025-05-22 04:34:56 PM] CSS purged, processed & minified completely. Total saved: 1.65 KB.
-[2025-05-22 04:34:56 PM] JS processing started.
-[2025-05-22 04:34:56 PM] JS TREE SHAKING REMOVED CODE BLOCK (unminified):
+[2025-05-22 12:54:31] [SUCCESS] PurgeCSS removed unused CSS code.
+---- Step completed in 0.10s: PurgeCSS step finished.
+
+========== AUTOPREFIX & MINIFY CSS (Lightning CSS) ==========
+[2025-05-22 12:54:31] [INFO] Running Lightning CSS for autoprefixing and minification...
+[2025-05-22 12:54:31] [SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 1.41 KB.
+---- Step completed in 0.01s: Lightning CSS step finished.
+[2025-05-22 12:54:31] [INFO] Temporary files cleaned up.
+---- Step completed: CSS processing complete.
+
+========== JS MINIFICATION & TREE SHAKING (esbuild) ==========
+[2025-05-22 12:54:31] [INFO] Starting esbuild JS processing...
+[REMOVED] JS code removed:
 function changeText() {
     const textElement = document.getElementById("slider-text");
     currentTextIndex = currentTextIndex < textOptions.length ? currentTextIndex : 0;
     textElement.textContent = textOptions[currentTextIndex];
     currentTextIndex++;
   }
-[2025-05-22 04:34:56 PM] JS Tree shaking complete: Unused JS code WAS REMOVED.
-[2025-05-22 04:34:56 PM] JS processed & minified completely. Total saved: 0.83 KB.
-[2025-05-22 04:34:56 PM] HTML minified and index.html written successfully. You saved 0.99 KB.
-[2025-05-22 04:34:56 PM] --- Build completed successfully ---
+[2025-05-22 12:54:31] [SUCCESS] esbuild tree shaking removed unused JS code.
+---- Step completed in 0.08s: JS tree shaking step finished.
+[2025-05-22 12:54:31] [INFO] Minifying tree-shaken JS with esbuild...
+[2025-05-22 12:54:31] [SUCCESS] JS minified. Saved 0.83 KB.
+---- Step completed: JS processing complete.
+
+========== MINIFY HTML ==========
+[2025-05-22 12:54:31] [SUCCESS] HTML minified and index.html written. Saved 0.99 KB.
+---- Step completed in 0.04s: HTML minification done.
+
+========== BUILD COMPLETE ==========
+[2025-05-22 12:54:31] [SUCCESS] [SUCCESS] All build steps finished successfully. You saved 7.97 KB in total.
+---- All Steps completed in 3.52s: Build finished.

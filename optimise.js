@@ -4,36 +4,61 @@ const fs = require('fs');
 const LOG_FILE = path.join(__dirname, 'build-report.log');
 if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
 
-function logReport(message) {
+const buildStartTime = Date.now(); // For total time reporting
+
+// Logging helpers
+let stepStartTime = null;
+function logSection(title) {
+  const msg = `\n========== ${title} ==========\n`;
+  fs.appendFileSync(LOG_FILE, msg, 'utf8');
+  console.log(msg);
+  stepStartTime = Date.now();
+}
+function logStep(message, status = 'INFO') {
   const now = new Date();
-  let hours = now.getHours();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const timestamp = `${now.getFullYear()}-${month}-${day} ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-  fs.appendFileSync(LOG_FILE, `[${timestamp}] ${message}\n`, 'utf8');
+  const timestamp = now.toISOString().replace('T', ' ').substring(0, 19);
+  const msg = `[${timestamp}] [${status}] ${message}`;
+  fs.appendFileSync(LOG_FILE, msg + '\n', 'utf8');
+  console.log(msg);
+}
+function logRemovedBlock(label, code) {
+  const msg = `[REMOVED] ${label}:\n${code.trim()}`;
+  fs.appendFileSync(LOG_FILE, msg + '\n', 'utf8');
+  console.log(msg);
+}
+function logStepDone(successMsg) {
+  if (stepStartTime !== null) {
+    const duration = ((Date.now() - stepStartTime) / 1000).toFixed(2);
+    const msg = `---- Step completed in ${duration}s: ${successMsg}`;
+    fs.appendFileSync(LOG_FILE, msg + '\n', 'utf8');
+    console.log(msg);
+    stepStartTime = null;
+  } else {
+    const msg = `---- Step completed: ${successMsg}`;
+    fs.appendFileSync(LOG_FILE, msg + '\n', 'utf8');
+    console.log(msg);
+  }
 }
 
 function requireWithLog(dep) {
   try {
     const pkg = require(dep);
-    logReport(`Dependency loaded: ${dep} - SUCCESS`);
+    logStep(`Dependency loaded: ${dep}`, 'SUCCESS');
     return pkg;
   } catch (err) {
-    logReport(`Dependency loaded: ${dep} - FAILED: ${err.message}`);
+    logStep(`Dependency loaded: ${dep} - FAILED: ${err.message}`, 'FAIL');
     throw err;
   }
 }
 
+logSection('DEPENDENCY LOADING');
 const { JSDOM } = requireWithLog('jsdom');
 const esbuild = requireWithLog('esbuild');
 const { PurgeCSS } = requireWithLog('purgecss');
 const { minify: htmlMinify } = requireWithLog('html-minifier-terser');
 const cssDiff = requireWithLog('diff');
+const lightningcss = requireWithLog('lightningcss');
+logStepDone('All dependencies loaded.');
 
 const SRC_HTML = path.join(__dirname, 'src', 'index.html');
 const OUT_HTML = path.join(__dirname, 'index.html');
@@ -44,31 +69,40 @@ const OUT_JS = path.join(ASSETS_DIR, 'script.min.js');
 const TMP_HTML_PATH = path.join(ASSETS_DIR, 'tmp-for-purge.html');
 const TMP_CSS_PATH = path.join(ASSETS_DIR, 'tmp-style.css');
 
+// Ensure assets dir exists
+logSection('ASSET DIRECTORY CHECK');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR);
+logStep('Assets directory exists or created.');
+logStepDone('Asset directory check done.');
 
-logReport('Assets directory checked/created.');
-
+// Read src/index.html
+logSection('READ SOURCE HTML');
 let htmlContent;
 try {
   htmlContent = fs.readFileSync(SRC_HTML, 'utf8');
-  logReport('Read src/index.html - SUCCESS');
+  logStep('Read src/index.html - SUCCESS');
+  logStepDone('Source HTML read.');
 } catch (err) {
-  logReport(`Read src/index.html - FAILED: ${err.message}`);
+  logStep(`Read src/index.html - FAILED: ${err.message}`, 'FAIL');
   throw err;
 }
 
 const dom = new JSDOM(htmlContent);
 const document = dom.window.document;
 
-// Extract ALL inline CSS from ALL <style> tags
+// Extract all inline CSS from <style> tags
+logSection('EXTRACT INLINE CSS');
 const styleTags = [...document.querySelectorAll('style')];
 const css = styleTags.map(tag => tag.textContent).join('\n');
+logStep(`Extracted CSS from ${styleTags.length} <style> tag(s).`);
+logStepDone('Inline CSS extraction done.');
 
-// Extract JS from the first <script> tag (customize if you want all scripts)
+// Extract JS from the first <script> tag
 const scriptTag = document.querySelector('script');
 const js = scriptTag ? scriptTag.textContent : '';
 
-// --- CREATE TMP HTML (no <style>, with <link> to TMP_CSS_PATH) ---
+// Create temporary HTML and CSS for PurgeCSS run
+logSection('GENERATE TEMP FILES FOR PURGECSS');
 const domTmp = new JSDOM(htmlContent);
 const docTmp = domTmp.window.document;
 [...docTmp.querySelectorAll('style')].forEach(tag => tag.remove());
@@ -79,65 +113,75 @@ docTmp.head.appendChild(linkTag);
 const tmpHtmlContent = domTmp.serialize();
 fs.writeFileSync(TMP_HTML_PATH, tmpHtmlContent, 'utf8');
 fs.writeFileSync(TMP_CSS_PATH, css, 'utf8');
+logStep('Temporary HTML and CSS files for PurgeCSS created.');
+logStepDone('Temp file generation done.');
 
 async function processCSS() {
+  logSection('PURGE UNUSED CSS (PurgeCSS)');
   try {
-    logReport('CSS processing started.');
     const originalSize = Buffer.byteLength(css, 'utf8');
-
-    // PurgeCSS: remove unused CSS
+    logStep('Running PurgeCSS to remove unused CSS selectors...');
     const purgeResult = await new PurgeCSS().purge({
       content: [TMP_HTML_PATH],
       css: [TMP_CSS_PATH]
     });
-    const purgedCSS = purgeResult[0].css;
+    let purgedCSS = purgeResult[0].css;
 
-    // Log only removed CSS blocks
+    // Log removed CSS blocks
     const diff = cssDiff.diffLines(css, purgedCSS);
-    let removed = false;
+    let removedBlocks = 0;
     diff.forEach(part => {
       if (part.removed && part.value.trim()) {
-        logReport('PURGECSS REMOVED CSS BLOCK:\n' + part.value.trim());
-        removed = true;
+        removedBlocks++;
+        logRemovedBlock('CSS code removed', part.value);
       }
     });
-    if (removed) {
-      logReport('CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.');
+    if (removedBlocks) {
+      logStep('PurgeCSS removed unused CSS code.', 'SUCCESS');
     } else {
-      logReport('CSS REMOVED: No unused CSS was removed by PurgeCSS.');
+      logStep('No unused CSS selectors were found by PurgeCSS.', 'SUCCESS');
     }
+    logStepDone('PurgeCSS step finished.');
 
-    // Minify the purged CSS with esbuild
-    const tempPurgedCssPath = path.join(ASSETS_DIR, 'purged-tmp.css');
-    fs.writeFileSync(tempPurgedCssPath, purgedCSS, 'utf8');
-    await esbuild.build({
-      entryPoints: [tempPurgedCssPath],
-      outfile: OUT_CSS,
+    logSection('AUTOPREFIX & MINIFY CSS (Lightning CSS)');
+    logStep('Running Lightning CSS for autoprefixing and minification...');
+    const { code } = lightningcss.transform({
+      filename: 'style.css',
+      code: Buffer.from(purgedCSS),
       minify: true,
-      bundle: false,
-      write: true,
-      logLevel: 'silent',
-      loader: { '.css': 'css' }
+      targets: {
+        chrome: 90,
+        firefox: 90,
+        safari: 13,
+        edge: 90
+      },
+      drafts: {},
+      sourceMap: false
     });
-    fs.unlinkSync(tempPurgedCssPath);
+
+    fs.writeFileSync(OUT_CSS, code);
 
     const minifiedSize = fs.statSync(OUT_CSS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
-    logReport(`CSS purged, processed & minified completely. Total saved: ${totalSavedKB} KB.`);
+    logStep(`Lightning CSS autoprefixed & minified CSS. Saved ${(totalSavedKB)} KB.`, 'SUCCESS');
+    logStepDone('Lightning CSS step finished.');
 
     // Clean up temp files
     fs.unlinkSync(TMP_HTML_PATH);
     fs.unlinkSync(TMP_CSS_PATH);
+    logStep('Temporary files cleaned up.');
+    logStepDone('CSS processing complete.');
   } catch (err) {
-    logReport(`CSS processing FAILED: ${err.message}`);
+    logStep(`CSS processing FAILED: ${err.message}`, 'FAIL');
     throw err;
   }
 }
 
 async function processJS() {
+  logSection('JS MINIFICATION & TREE SHAKING (esbuild)');
   try {
-    logReport('JS processing started.');
     const originalSize = Buffer.byteLength(js, 'utf8');
+    logStep('Starting esbuild JS processing...');
 
     // Write JS to temp file for esbuild input
     const tempJsPath = path.join(ASSETS_DIR, 'script-tmp.js');
@@ -178,20 +222,22 @@ async function processJS() {
     const tsContent = fs.readFileSync(UNMIN_JS_TS, 'utf8');
     const notsContent = fs.readFileSync(UNMIN_JS_NOTS, 'utf8');
     const changes = cssDiff.diffLines(notsContent, tsContent);
-    let jsCodeRemoved = false;
+    let jsCodeRemoved = 0;
     changes.forEach(part => {
       if (part.removed && part.value.trim()) {
-        jsCodeRemoved = true;
-        logReport('JS TREE SHAKING REMOVED CODE BLOCK (unminified):\n' + part.value.trim());
+        jsCodeRemoved++;
+        logRemovedBlock('JS code removed', part.value);
       }
     });
     if (jsCodeRemoved) {
-      logReport('JS Tree shaking complete: Unused JS code WAS REMOVED.');
+      logStep('esbuild tree shaking removed unused JS code.', 'SUCCESS');
     } else {
-      logReport('JS Tree shaking complete: No unused JS code was found.');
+      logStep('No unused JS code was found by esbuild tree shaking.', 'SUCCESS');
     }
+    logStepDone('JS tree shaking step finished.');
 
     // Now minify only the tree-shaken JS for production
+    logStep('Minifying tree-shaken JS with esbuild...');
     await esbuild.build({
       entryPoints: [UNMIN_JS_TS],
       outfile: OUT_JS,
@@ -210,15 +256,16 @@ async function processJS() {
     fs.unlinkSync(UNMIN_JS_TS);
     fs.unlinkSync(UNMIN_JS_NOTS);
 
-    logReport(`JS processed & minified completely. Total saved: ${totalSavedKB} KB.`);
+    logStep(`JS minified. Saved ${totalSavedKB} KB.`, 'SUCCESS');
+    logStepDone('JS processing complete.');
   } catch (err) {
-    logReport(`JS processing FAILED: ${err.message}`);
+    logStep(`JS processing FAILED: ${err.message}`, 'FAIL');
     throw err;
   }
 }
 
 (async () => {
-  logReport('--- Build started ---');
+  logSection('BUILD START');
   try {
     await processCSS();
     await processJS();
@@ -238,7 +285,7 @@ async function processJS() {
     script.defer = true;
     document.body.appendChild(script);
 
-    // Minify HTML
+    logSection('MINIFY HTML');
     const originalSize = Buffer.byteLength(dom.serialize(), 'utf8');
     const finalHtml = await htmlMinify(dom.serialize(), {
       collapseWhitespace: true,
@@ -252,12 +299,35 @@ async function processJS() {
 
     // Write output HTML
     fs.writeFileSync(OUT_HTML, finalHtml, 'utf8');
-    logReport(`HTML minified and index.html written successfully. You saved ${savedKB} KB.`);
+    logStep(`HTML minified and index.html written. Saved ${savedKB} KB.`, 'SUCCESS');
+    logStepDone('HTML minification done.');
 
-    logReport('--- Build completed successfully ---');
-    console.log('Build complete: index.html and assets/style.min.css + script.min.js created/updated.\nSee build-report.log for details.');
+    logSection('BUILD COMPLETE');
+
+    // Calculate total original and optimized sizes
+    const srcHtmlSize = fs.statSync(SRC_HTML).size;
+    const srcCssSize = Buffer.byteLength(css, 'utf8');
+    const srcJsSize = Buffer.byteLength(js, 'utf8');
+    const totalOriginal = srcHtmlSize + srcCssSize + srcJsSize;
+
+    const optHtmlSize = fs.statSync(OUT_HTML).size;
+    const optCssSize = fs.statSync(OUT_CSS).size;
+    const optJsSize = fs.statSync(OUT_JS).size;
+    const totalOptimized = optHtmlSize + optCssSize + optJsSize;
+
+    const totalSaved = totalOriginal - totalOptimized;
+    const totalSavedKB = (totalSaved / 1024).toFixed(2);
+
+    logStep(`[SUCCESS] All build steps finished successfully. You saved ${totalSavedKB} KB in total.`, 'SUCCESS');
+
+    const totalBuildTime = ((Date.now() - buildStartTime) / 1000).toFixed(2);
+    const finalMsg = `All Steps completed in ${totalBuildTime}s: Build finished.`;
+    fs.appendFileSync(LOG_FILE, `---- ${finalMsg}\n`, 'utf8');
+    console.log(`---- ${finalMsg}`);
+    console.log('\nBuild complete: index.html and assets/style.min.css + script.min.js created/updated.\nSee build-report.log for details.');
   } catch (err) {
-    logReport(`Build FAILED: ${err.stack || err.message}`);
+    logStep(`Build FAILED: ${err.stack || err.message}`, 'FAIL');
+    logStepDone('Build failed.');
     console.error('Build failed. See build-report.log for details.');
     process.exit(1);
   }
