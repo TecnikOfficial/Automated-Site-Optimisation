@@ -1,18 +1,54 @@
-[2025-05-22 02:11:02 PM] Dependency loaded: jsdom - SUCCESS
-[2025-05-22 02:11:02 PM] Dependency loaded: purgecss - SUCCESS
-[2025-05-22 02:11:02 PM] Dependency loaded: esbuild - SUCCESS
-[2025-05-22 02:11:02 PM] Dependency loaded: postcss - SUCCESS
-[2025-05-22 02:11:03 PM] Dependency loaded: autoprefixer - SUCCESS
-[2025-05-22 02:11:03 PM] Dependency loaded: html-minifier-terser - SUCCESS
-[2025-05-22 02:11:03 PM] Dependency loaded: diff - SUCCESS
-[2025-05-22 02:11:03 PM] Assets directory checked/created.
-[2025-05-22 02:11:03 PM] Read src/index.html - SUCCESS
-[2025-05-22 02:11:04 PM] --- Build started ---
-[2025-05-22 02:11:04 PM] CSS processing started.
-[2025-05-22 02:11:04 PM] CSS REMOVED: No unused CSS was removed by PurgeCSS.
-[2025-05-22 02:11:05 PM] CSS processed & minified completely. Total saved: 0.88 KB.
-[2025-05-22 02:11:05 PM] JS processing started.
-[2025-05-22 02:11:05 PM] JS Tree shaking complete: No unused JS code was found.
-[2025-05-22 02:11:05 PM] JS processed & minified completely. Total saved: 0.56 KB.
-[2025-05-22 02:11:05 PM] HTML minified and index.html written successfully. You saved 0.99 KB.
-[2025-05-22 02:11:05 PM] --- Build completed successfully ---
+[2025-05-22 04:34:55 PM] Dependency loaded: jsdom - SUCCESS
+[2025-05-22 04:34:55 PM] Dependency loaded: esbuild - SUCCESS
+[2025-05-22 04:34:55 PM] Dependency loaded: purgecss - SUCCESS
+[2025-05-22 04:34:55 PM] Dependency loaded: html-minifier-terser - SUCCESS
+[2025-05-22 04:34:55 PM] Dependency loaded: diff - SUCCESS
+[2025-05-22 04:34:55 PM] Assets directory checked/created.
+[2025-05-22 04:34:55 PM] Read src/index.html - SUCCESS
+[2025-05-22 04:34:56 PM] --- Build started ---
+[2025-05-22 04:34:56 PM] CSS processing started.
+[2025-05-22 04:34:56 PM] PURGECSS REMOVED CSS BLOCK:
+.project-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 20px;
+margin-top: 20px;
+/* Add these properties to fix the scrolling glitch */
+position: relative;
+will-change: transform;
+transform: translateZ(0);
+}
+
+.project-card {
+  background-color: rgba(0, 50, 0, 0.2); /* Light green tint with transparency */
+  backdrop-filter: blur(3px); /* Add blur effect */
+  border: 2px solid rgba(0, 255, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+  /* Add these properties to fix the scrolling glitch */
+  height: 100%;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.testiju {
+height: 100%;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+[2025-05-22 04:34:56 PM] CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.
+[2025-05-22 04:34:56 PM] CSS purged, processed & minified completely. Total saved: 1.65 KB.
+[2025-05-22 04:34:56 PM] JS processing started.
+[2025-05-22 04:34:56 PM] JS TREE SHAKING REMOVED CODE BLOCK (unminified):
+function changeText() {
+    const textElement = document.getElementById("slider-text");
+    currentTextIndex = currentTextIndex < textOptions.length ? currentTextIndex : 0;
+    textElement.textContent = textOptions[currentTextIndex];
+    currentTextIndex++;
+  }
+[2025-05-22 04:34:56 PM] JS Tree shaking complete: Unused JS code WAS REMOVED.
+[2025-05-22 04:34:56 PM] JS processed & minified completely. Total saved: 0.83 KB.
+[2025-05-22 04:34:56 PM] HTML minified and index.html written successfully. You saved 0.99 KB.
+[2025-05-22 04:34:56 PM] --- Build completed successfully ---

@@ -30,10 +30,8 @@ function requireWithLog(dep) {
 }
 
 const { JSDOM } = requireWithLog('jsdom');
-const { PurgeCSS } = requireWithLog('purgecss');
 const esbuild = requireWithLog('esbuild');
-const postcss = requireWithLog('postcss');
-const autoprefixer = requireWithLog('autoprefixer');
+const { PurgeCSS } = requireWithLog('purgecss');
 const { minify: htmlMinify } = requireWithLog('html-minifier-terser');
 const cssDiff = requireWithLog('diff');
 
@@ -42,6 +40,9 @@ const OUT_HTML = path.join(__dirname, 'index.html');
 const ASSETS_DIR = path.join(__dirname, 'assets');
 const OUT_CSS = path.join(ASSETS_DIR, 'style.min.css');
 const OUT_JS = path.join(ASSETS_DIR, 'script.min.js');
+
+const TMP_HTML_PATH = path.join(ASSETS_DIR, 'tmp-for-purge.html');
+const TMP_CSS_PATH = path.join(ASSETS_DIR, 'tmp-style.css');
 
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR);
 
@@ -59,83 +60,74 @@ try {
 const dom = new JSDOM(htmlContent);
 const document = dom.window.document;
 
-// Extract CSS and JS from HTML
-const styleTag = document.querySelector('style');
+// Extract ALL inline CSS from ALL <style> tags
+const styleTags = [...document.querySelectorAll('style')];
+const css = styleTags.map(tag => tag.textContent).join('\n');
+
+// Extract JS from the first <script> tag (customize if you want all scripts)
 const scriptTag = document.querySelector('script');
-const css = styleTag ? styleTag.textContent : '';
 const js = scriptTag ? scriptTag.textContent : '';
+
+// --- CREATE TMP HTML (no <style>, with <link> to TMP_CSS_PATH) ---
+const domTmp = new JSDOM(htmlContent);
+const docTmp = domTmp.window.document;
+[...docTmp.querySelectorAll('style')].forEach(tag => tag.remove());
+const linkTag = docTmp.createElement('link');
+linkTag.rel = 'stylesheet';
+linkTag.href = './tmp-style.css'; // relative for PurgeCSS context
+docTmp.head.appendChild(linkTag);
+const tmpHtmlContent = domTmp.serialize();
+fs.writeFileSync(TMP_HTML_PATH, tmpHtmlContent, 'utf8');
+fs.writeFileSync(TMP_CSS_PATH, css, 'utf8');
 
 async function processCSS() {
   try {
     logReport('CSS processing started.');
     const originalSize = Buffer.byteLength(css, 'utf8');
 
-    // Write extracted CSS to temp file
-    const tempCssPath = path.join(ASSETS_DIR, 'temp-style.css');
-    fs.writeFileSync(tempCssPath, css, 'utf8');
-
-    // Remove <style> from DOM and write new HTML to temp file for PurgeCSS
-    const domForPurge = new JSDOM(htmlContent);
-    const purgeDoc = domForPurge.window.document;
-    const purgeStyle = purgeDoc.querySelector('style');
-    if (purgeStyle) purgeStyle.remove();
-    const tempHtmlPath = path.join(ASSETS_DIR, 'purge-tmp.html');
-    fs.writeFileSync(tempHtmlPath, domForPurge.serialize(), 'utf8');
-
-    // Run PurgeCSS with improved extractor
-    const purgeCSSResult = await new PurgeCSS().purge({
-      content: [tempHtmlPath],
-      css: [tempCssPath],
-      // More robust extractor to handle more selector patterns
-      defaultExtractor: content =>
-        content.match(/[\w-/:%.#@]+(?<!:)/g) || [],
-      // Add safelist if you use dynamic classes (edit as needed)
-      // safelist: ['html', 'body', /^dynamic-/]
+    // PurgeCSS: remove unused CSS
+    const purgeResult = await new PurgeCSS().purge({
+      content: [TMP_HTML_PATH],
+      css: [TMP_CSS_PATH]
     });
+    const purgedCSS = purgeResult[0].css;
 
-    fs.unlinkSync(tempHtmlPath);
-    fs.unlinkSync(tempCssPath);
-
-    const purgedCSS = purgeCSSResult[0] ? purgeCSSResult[0].css : css;
-
-    // Log removed CSS code blocks (diagnostic)
+    // Log only removed CSS blocks
     const diff = cssDiff.diffLines(css, purgedCSS);
-    let cssRemoved = false;
+    let removed = false;
     diff.forEach(part => {
       if (part.removed && part.value.trim()) {
-        cssRemoved = true;
         logReport('PURGECSS REMOVED CSS BLOCK:\n' + part.value.trim());
+        removed = true;
       }
     });
-    if (cssRemoved) {
+    if (removed) {
       logReport('CSS REMOVED: Unused CSS selectors/rules WERE REMOVED by PurgeCSS.');
     } else {
       logReport('CSS REMOVED: No unused CSS was removed by PurgeCSS.');
     }
 
-    // Autoprefixer via PostCSS
-    const result = await postcss([autoprefixer]).process(purgedCSS, { from: undefined });
-
-    // Write post-processed CSS to a temp file for minification
-    const minifyInputPath = path.join(ASSETS_DIR, 'style-tmp.css');
-    fs.writeFileSync(minifyInputPath, result.css, 'utf8');
-
-    // Minify CSS using esbuild
+    // Minify the purged CSS with esbuild
+    const tempPurgedCssPath = path.join(ASSETS_DIR, 'purged-tmp.css');
+    fs.writeFileSync(tempPurgedCssPath, purgedCSS, 'utf8');
     await esbuild.build({
-      entryPoints: [minifyInputPath],
+      entryPoints: [tempPurgedCssPath],
       outfile: OUT_CSS,
       minify: true,
       bundle: false,
       write: true,
-      logLevel: 'silent'
+      logLevel: 'silent',
+      loader: { '.css': 'css' }
     });
+    fs.unlinkSync(tempPurgedCssPath);
 
-    fs.unlinkSync(minifyInputPath);
-
-    // Calculate actual KB saved
     const minifiedSize = fs.statSync(OUT_CSS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
-    logReport(`CSS processed & minified completely. Total saved: ${totalSavedKB} KB.`);
+    logReport(`CSS purged, processed & minified completely. Total saved: ${totalSavedKB} KB.`);
+
+    // Clean up temp files
+    fs.unlinkSync(TMP_HTML_PATH);
+    fs.unlinkSync(TMP_CSS_PATH);
   } catch (err) {
     logReport(`CSS processing FAILED: ${err.message}`);
     throw err;
@@ -231,8 +223,8 @@ async function processJS() {
     await processCSS();
     await processJS();
 
-    // Remove old <style> and <script> tags from DOM
-    if (styleTag) styleTag.remove();
+    // Remove old <style> and <script> tags from DOM (for minified HTML output)
+    document.querySelectorAll('style').forEach(tag => tag.remove());
     if (scriptTag) scriptTag.remove();
 
     // Add <link> and <script> references
