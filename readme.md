@@ -64,13 +64,15 @@ If you run into build errors or want to see what’s happening behind the scenes
 ---
 ## 📄 License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+This project is licensed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
 
-You are free to use, modify, and share this project for non-commercial purposes, as long as you give appropriate credit.  
-Commercial use is **not permitted**.
+You are free to use, modify, share, and use this project for commercial purposes, as long as you give appropriate credit.
 
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
+See the [LICENSE](LICENSE) file for more details.
+
+---
 
 ## 🙏 Credits / Dependencies Used
 
