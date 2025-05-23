@@ -59,6 +59,8 @@ Ability to auto minify images in `assets` folder
 You can easily edit your site’s code in a formatted, human-readable form inside `src/index.html` and get optimised site files in seconds.<br>
 If you run into build errors or want to see what’s happening behind the scenes, you can always check the `build-report.logs` for more information.
 
+✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f67a29baf5537be7bc?nocache=1)
+
 ---
 
 ## 🙏 Credits / Dependencies Used
