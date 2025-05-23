@@ -62,6 +62,16 @@ If you run into build errors or want to see what’s happening behind the scenes
 ✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f67a29baf5537be7bc?nocache=1)
 
 ---
+## 📄 License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+You are free to use, modify, and share this project for non-commercial purposes, as long as you give appropriate credit.  
+Commercial use is **not permitted**.
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+See the [LICENSE](LICENSE) file for more details.
 
 ## 🙏 Credits / Dependencies Used
 
