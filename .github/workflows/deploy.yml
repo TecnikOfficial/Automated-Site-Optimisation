@@ -40,7 +40,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add index.html assets/style.min.css assets/script.min.js build-report.log
-          git commit -m "Auto-updated minified files from src/index.html - check logs" || echo "No changes to commit"
+          git commit -m "Auto-updated optimised files from src/index.html - check logs" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
