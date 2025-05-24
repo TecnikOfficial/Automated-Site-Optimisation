@@ -22,7 +22,7 @@ jobs:
           node-version: 'node' # Always uses the latest stable, not just LTS
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -40,7 +40,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add index.html assets/style.min.css assets/script.min.js build-report.log
-          git commit -m "Auto-update minified files and build-report.log from src/index.html" || echo "No changes to commit"
+          git commit -m "Auto-updated minified files from src/index.html - check logs" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
