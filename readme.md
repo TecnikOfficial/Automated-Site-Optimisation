@@ -1,4 +1,5 @@
-# optimise.js - Automated Site Optimiser <img src="https://cdn.jsdelivr.net/gh/TecnikOfficial/Automated-Site-Optimiser@refs/heads/main/assets/img/rocket.webp" alt="Rocket" width="40" height="40">
+# optimise.js - Automated Site Optimiser [<img src="https://cdn.jsdelivr.net/gh/TecnikOfficial/Automated-Site-Optimiser@refs/heads/main/assets/img/rocket.webp" alt="Rocket" width="40" height="40">](https://github.com/TecnikOfficial/Automated-Site-Optimiser)
+
 
 optimise.js helps you build fast, efficient static sites with automated HTML, CSS, and JS optimization and deployment.
 
