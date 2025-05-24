@@ -52,7 +52,9 @@ All you have to do is **merge the pull request**—your site always stays update
 ## 🗓️ Planned Updates
 
 🖼️ **Image Optimisation** - 
-Ability to auto minify images in `assets` folder
+Ability to auto minify images in `assets` folder.
+✂️ **Lite Mode** -
+Make `optimise.js` process files without Tree-shaking or PurgeCSS.
 
 ---
 
