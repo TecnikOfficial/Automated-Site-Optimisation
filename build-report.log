@@ -1,93 +1,68 @@
 
 ========== DEPENDENCY LOADING ==========
-[2025-05-22 13:20:19] [SUCCESS] Dependency loaded: jsdom
-[2025-05-22 13:20:19] [SUCCESS] Dependency loaded: esbuild
-[2025-05-22 13:20:19] [SUCCESS] Dependency loaded: purgecss
-[2025-05-22 13:20:21] [SUCCESS] Dependency loaded: html-minifier-terser
-[2025-05-22 13:20:21] [SUCCESS] Dependency loaded: diff
-[2025-05-22 13:20:21] [SUCCESS] Dependency loaded: lightningcss
----- Step completed in 9.06s: All dependencies loaded.
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: jsdom
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: esbuild
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: purgecss
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: html-minifier-terser
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: diff
+[2025-05-24 15:27:07] [SUCCESS] Dependency loaded: lightningcss
+---- Step completed in 0.41s: All dependencies loaded.
 
 ========== ASSET DIRECTORY CHECK ==========
-[2025-05-22 13:20:21] [INFO] Assets directory exists or created.
----- Step completed in 0.02s: Asset directory check done.
+[2025-05-24 15:27:07] [INFO] Assets directory exists or created.
+---- Step completed in 0.00s: Asset directory check done.
 
 ========== READ SOURCE HTML ==========
-[2025-05-22 13:20:21] [INFO] Read src/index.html - SUCCESS
+[2025-05-24 15:27:07] [INFO] Read src/index.html - SUCCESS
 ---- Step completed in 0.00s: Source HTML read.
 
 ========== EXTRACT INLINE CSS ==========
-[2025-05-22 13:20:22] [INFO] Extracted CSS from 1 <style> tag(s).
----- Step completed in 0.01s: Inline CSS extraction done.
+[2025-05-24 15:27:07] [INFO] Extracted CSS from 1 <style> tag(s).
+---- Step completed in 0.00s: Inline CSS extraction done.
 
 ========== GENERATE TEMP FILES FOR PURGECSS ==========
-[2025-05-22 13:20:23] [INFO] Temporary HTML and CSS files for PurgeCSS created.
----- Step completed in 0.42s: Temp file generation done.
+[2025-05-24 15:27:07] [INFO] Temporary HTML and CSS files for PurgeCSS created.
+---- Step completed in 0.03s: Temp file generation done.
 
 ========== BUILD START ==========
 
 ========== PURGE UNUSED CSS (PurgeCSS) ==========
-[2025-05-22 13:20:23] [INFO] Running PurgeCSS to remove unused CSS selectors...
+[2025-05-24 15:27:07] [INFO] Running PurgeCSS to remove unused CSS selectors...
 [REMOVED] CSS code removed:
-.project-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 20px;
-margin-top: 20px;
-/* Add these properties to fix the scrolling glitch */
-position: relative;
-will-change: transform;
-transform: translateZ(0);
-}
-
-.project-card {
-  background-color: rgba(0, 50, 0, 0.2); /* Light green tint with transparency */
-  backdrop-filter: blur(3px); /* Add blur effect */
-  border: 2px solid rgba(0, 255, 0, 0.3);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  flex-direction: column;
-  /* Add these properties to fix the scrolling glitch */
-  height: 100%;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.testiju {
+.uselesscsstest {
 height: 100%;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
-[2025-05-22 13:20:23] [SUCCESS] PurgeCSS removed unused CSS code.
----- Step completed in 0.35s: PurgeCSS step finished.
+[2025-05-24 15:27:07] [SUCCESS] PurgeCSS removed unused CSS code.
+---- Step completed in 0.02s: PurgeCSS step finished.
 
 ========== AUTOPREFIX & MINIFY CSS (Lightning CSS) ==========
-[2025-05-22 13:20:23] [INFO] Running Lightning CSS for autoprefixing and minification...
-[2025-05-22 13:20:23] [SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 1.41 KB.
----- Step completed in 0.03s: Lightning CSS step finished.
-[2025-05-22 13:20:23] [INFO] Temporary files cleaned up.
+[2025-05-24 15:27:07] [INFO] Running Lightning CSS for autoprefixing and minification...
+[2025-05-24 15:27:07] [SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 0.71 KB.
+---- Step completed in 0.00s: Lightning CSS step finished.
+[2025-05-24 15:27:07] [INFO] Temporary files cleaned up.
 ---- Step completed: CSS processing complete.
 
 ========== JS MINIFICATION & TREE SHAKING (esbuild) ==========
-[2025-05-22 13:20:23] [INFO] Starting esbuild JS processing...
+[2025-05-24 15:27:07] [INFO] Starting esbuild JS processing...
 [REMOVED] JS code removed:
 function changeText() {
-    const textElement = document.getElementById("slider-text");
+    const textElement = document.getElementById("useless-js");
     currentTextIndex = currentTextIndex < textOptions.length ? currentTextIndex : 0;
     textElement.textContent = textOptions[currentTextIndex];
     currentTextIndex++;
   }
-[2025-05-22 13:20:23] [SUCCESS] esbuild tree shaking removed unused JS code.
----- Step completed in 0.22s: JS tree shaking step finished.
-[2025-05-22 13:20:23] [INFO] Minifying tree-shaken JS with esbuild...
-[2025-05-22 13:20:23] [SUCCESS] JS minified. Saved 0.83 KB.
+[2025-05-24 15:27:07] [SUCCESS] esbuild tree shaking removed unused JS code.
+---- Step completed in 0.01s: JS tree shaking step finished.
+[2025-05-24 15:27:07] [INFO] Minifying tree-shaken JS with esbuild...
+[2025-05-24 15:27:07] [SUCCESS] JS minified. Saved 0.82 KB.
 ---- Step completed: JS processing complete.
 
 ========== MINIFY HTML ==========
-[2025-05-22 13:20:23] [SUCCESS] HTML minified and index.html written. Saved 0.99 KB.
----- Step completed in 0.17s: HTML minification done.
+[2025-05-24 15:27:07] [SUCCESS] HTML minified and index.html written. Saved 1.05 KB.
+---- Step completed in 0.01s: HTML minification done.
 
 ========== BUILD COMPLETE ==========
-[2025-05-22 13:20:24] [SUCCESS] [SUCCESS] All build steps finished successfully. You saved 7.97 KB in total.
----- All Steps completed in 11.85s: Build finished.
+[2025-05-24 15:27:07] [SUCCESS] [SUCCESS] All build steps finished successfully. You saved 6.36 KB in total.
+---- All Steps completed in 0.57s: Build finished.
