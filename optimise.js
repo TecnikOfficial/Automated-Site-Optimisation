@@ -4,7 +4,18 @@ const fs = require('fs');
 const LOG_FILE = path.join(__dirname, 'build-report.log');
 if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
 
-const buildStartTime = Date.now(); // For total time reporting
+// === Insert date/time heading at top of log file ===
+const now = new Date();
+let hours = now.getHours();
+const minutes = now.getMinutes().toString().padStart(2, '0');
+const ampm = hours >= 12 ? 'PM' : 'AM';
+hours = hours % 12;
+hours = hours ? hours : 12;
+const datePart = now.toISOString().slice(0, 10);
+const timePart = `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+fs.appendFileSync(LOG_FILE, `BUILD STARTED AT: ${datePart} ${timePart} \n`, 'utf8');
+
+const buildStartTime = new Date(); // Capture the actual build start date/time
 
 // Logging helpers
 let stepStartTime = null;
@@ -15,9 +26,7 @@ function logSection(title) {
   stepStartTime = Date.now();
 }
 function logStep(message, status = 'INFO') {
-  const now = new Date();
-  const timestamp = now.toISOString().replace('T', ' ').substring(0, 19);
-  const msg = `[${timestamp}] [${status}] ${message}`;
+  const msg = `[${status}] ${message}`;
   fs.appendFileSync(LOG_FILE, msg + '\n', 'utf8');
   console.log(msg);
 }
@@ -318,7 +327,7 @@ async function processJS() {
     const totalSaved = totalOriginal - totalOptimized;
     const totalSavedKB = (totalSaved / 1024).toFixed(2);
 
-    logStep(`[SUCCESS] All build steps finished successfully. You saved ${totalSavedKB} KB in total.`, 'SUCCESS');
+    logStep(`All build steps finished successfully. You saved ${totalSavedKB} KB in total.`, 'SUCCESS');
 
     const totalBuildTime = ((Date.now() - buildStartTime) / 1000).toFixed(2);
     const finalMsg = `All Steps completed in ${totalBuildTime}s: Build finished.`;
