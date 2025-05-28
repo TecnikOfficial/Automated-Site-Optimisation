@@ -8,7 +8,7 @@
     "optimise": "node optimise.js"
   },
   "devDependencies": {
-    "diff": "^8.0.1",
+    "diff": "^8.0.2",
     "esbuild": "^0.25.4",
     "html-minifier-terser": "^7.2.0",
     "jsdom": "^26.1.0",
