@@ -51,7 +51,7 @@ npm run optimise
 ```
 npm run optimise-lite
 ```
-- **Description:** This mode processes files without tree-shaking or PurgeCSS, making it faster but less aggressive in optimization.
+- **Description:** This mode processes files without tree-shaking or PurgeCSS, making it safer but less aggressive in optimization.
 
 ---
 
