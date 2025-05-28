@@ -1,14 +1,12 @@
-BUILD STARTED AT: 2025-05-28 10:24 PM 
+BUILD STARTED AT: 2025-05-28 11:26 PM
 
 ========== DEPENDENCY LOADING ==========
 [SUCCESS] Dependency loaded: jsdom
 [SUCCESS] Dependency loaded: esbuild
-[SUCCESS] Dependency loaded: purgecss
 [SUCCESS] Dependency loaded: html-minifier-terser
 [SUCCESS] Dependency loaded: diff
 [SUCCESS] Dependency loaded: lightningcss
-[SUCCESS] Dependency loaded: terser
----- Step completed in 2.68s: All dependencies loaded.
+---- Step completed in 2.87s: All dependencies loaded.
 
 ========== ASSET DIRECTORY CHECK ==========
 [INFO] Assets directory exists or created.
@@ -22,42 +20,22 @@ BUILD STARTED AT: 2025-05-28 10:24 PM
 [INFO] Extracted CSS from 1 <style> tag(s).
 ---- Step completed in 0.01s: Inline CSS extraction done.
 
-========== GENERATE TEMP FILES FOR PURGECSS ==========
-[INFO] Temporary HTML and CSS files for PurgeCSS created.
----- Step completed in 0.12s: Temp file generation done.
-
 ========== BUILD START ==========
-
-========== PURGE UNUSED CSS (PurgeCSS) ==========
-[INFO] Running PurgeCSS to remove unused CSS selectors...
-[REMOVED] CSS code removed:
-.uselesscsstest {
-height: 100%;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-[SUCCESS] PurgeCSS removed unused CSS code.
----- Step completed in 0.08s: PurgeCSS step finished.
 
 ========== AUTOPREFIX & MINIFY CSS (Lightning CSS) ==========
 [INFO] Running Lightning CSS for autoprefixing and minification...
-[SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 0.71 KB.
----- Step completed in 0.01s: Lightning CSS step finished.
-[INFO] Temporary files cleaned up.
----- Step completed: CSS processing complete.
+[SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 0.63 KB.
+---- Step completed in 0.02s: CSS processing complete.
 
-========== JS MINIFICATION & TREE SHAKING (esbuild + Terser) ==========
-[INFO] Starting esbuild JS processing for tree shaking...
-[INFO] Esbuild tree shaking complete.
-[INFO] Terser: Starting compression & mangling on tree-shaken code...
-[INFO] Terser: Compression & mangling completed successfully.
-[SUCCESS] JS minified with Terser. Saved 0.83 KB.
----- Step completed in 0.21s: JS processing complete with Terser.
+========== JS MINIFICATION (esbuild, without tree shaking) ==========
+[INFO] Starting esbuild JS processing for bundling and minification...
+[SUCCESS] JS minified with esbuild. Saved 0.63 KB.
+---- Step completed in 0.08s: JS processing complete with esbuild.
 
 ========== MINIFY HTML ==========
 [SUCCESS] HTML minified and index.html written. Saved 1.05 KB.
 ---- Step completed in 0.05s: HTML minification done.
 
 ========== BUILD COMPLETE ==========
-[SUCCESS] All build steps finished successfully. You saved 6.59 KB in total.
----- All Steps completed in 3.68s: Build finished.
+[SUCCESS] All build steps finished successfully. You saved 6.32 KB in total.
+---- All Steps completed in 3.52s: Build finished.

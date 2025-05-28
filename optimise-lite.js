@@ -13,9 +13,9 @@ hours = hours % 12;
 hours = hours ? hours : 12;
 const datePart = now.toISOString().slice(0, 10);
 const timePart = `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-fs.appendFileSync(LOG_FILE, `BUILD STARTED AT: ${datePart} ${timePart} \n`, 'utf8');
+fs.appendFileSync(LOG_FILE, `BUILD STARTED AT: ${datePart} ${timePart}\n`, 'utf8');
 
-const buildStartTime = new Date(); // Capture the actual build start date/time
+const buildStartTime = new Date(); // Capture build start time
 
 // Logging helpers
 let stepStartTime = null;
@@ -60,10 +60,10 @@ function requireWithLog(dep) {
   }
 }
 
+// Dependency loading (Purged: PurgeCSS and Terser removed)
 logSection('DEPENDENCY LOADING');
 const { JSDOM } = requireWithLog('jsdom');
 const esbuild = requireWithLog('esbuild');
-const { PurgeCSS } = requireWithLog('purgecss');
 const { minify: htmlMinify } = requireWithLog('html-minifier-terser');
 const cssDiff = requireWithLog('diff');
 const lightningcss = requireWithLog('lightningcss');
@@ -75,10 +75,7 @@ const ASSETS_DIR = path.join(__dirname, 'assets');
 const OUT_CSS = path.join(ASSETS_DIR, 'style.min.css');
 const OUT_JS = path.join(ASSETS_DIR, 'script.min.js');
 
-const TMP_HTML_PATH = path.join(ASSETS_DIR, 'tmp-for-purge.html');
-const TMP_CSS_PATH = path.join(ASSETS_DIR, 'tmp-style.css');
-
-// Ensure assets dir exists
+// Ensure assets directory exists
 logSection('ASSET DIRECTORY CHECK');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR);
 logStep('Assets directory exists or created.');
@@ -110,53 +107,15 @@ logStepDone('Inline CSS extraction done.');
 const scriptTag = document.querySelector('script');
 const js = scriptTag ? scriptTag.textContent : '';
 
-// Create temporary HTML and CSS for PurgeCSS run
-logSection('GENERATE TEMP FILES FOR PURGECSS');
-const domTmp = new JSDOM(htmlContent);
-const docTmp = domTmp.window.document;
-[...docTmp.querySelectorAll('style')].forEach(tag => tag.remove());
-const linkTag = docTmp.createElement('link');
-linkTag.rel = 'stylesheet';
-linkTag.href = './tmp-style.css'; // relative for PurgeCSS context
-docTmp.head.appendChild(linkTag);
-const tmpHtmlContent = domTmp.serialize();
-fs.writeFileSync(TMP_HTML_PATH, tmpHtmlContent, 'utf8');
-fs.writeFileSync(TMP_CSS_PATH, css, 'utf8');
-logStep('Temporary HTML and CSS files for PurgeCSS created.');
-logStepDone('Temp file generation done.');
-
+// Process CSS: Autoprefix & Minify (using Lightning CSS only)
 async function processCSS() {
-  logSection('PURGE UNUSED CSS (PurgeCSS)');
+  logSection('AUTOPREFIX & MINIFY CSS (Lightning CSS)');
   try {
     const originalSize = Buffer.byteLength(css, 'utf8');
-    logStep('Running PurgeCSS to remove unused CSS selectors...');
-    const purgeResult = await new PurgeCSS().purge({
-      content: [TMP_HTML_PATH],
-      css: [TMP_CSS_PATH]
-    });
-    let purgedCSS = purgeResult[0].css;
-
-    // Log removed CSS blocks
-    const diff = cssDiff.diffLines(css, purgedCSS);
-    let removedBlocks = 0;
-    diff.forEach(part => {
-      if (part.removed && part.value.trim()) {
-        removedBlocks++;
-        logRemovedBlock('CSS code removed', part.value);
-      }
-    });
-    if (removedBlocks) {
-      logStep('PurgeCSS removed unused CSS code.', 'SUCCESS');
-    } else {
-      logStep('No unused CSS selectors were found by PurgeCSS.', 'SUCCESS');
-    }
-    logStepDone('PurgeCSS step finished.');
-
-    logSection('AUTOPREFIX & MINIFY CSS (Lightning CSS)');
     logStep('Running Lightning CSS for autoprefixing and minification...');
     const { code } = lightningcss.transform({
       filename: 'style.css',
-      code: Buffer.from(purgedCSS),
+      code: Buffer.from(css),
       minify: true,
       targets: {
         chrome: 90,
@@ -167,18 +126,10 @@ async function processCSS() {
       drafts: {},
       sourceMap: false
     });
-
     fs.writeFileSync(OUT_CSS, code);
-
     const minifiedSize = fs.statSync(OUT_CSS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
-    logStep(`Lightning CSS autoprefixed & minified CSS. Saved ${(totalSavedKB)} KB.`, 'SUCCESS');
-    logStepDone('Lightning CSS step finished.');
-
-    // Clean up temp files
-    fs.unlinkSync(TMP_HTML_PATH);
-    fs.unlinkSync(TMP_CSS_PATH);
-    logStep('Temporary files cleaned up.');
+    logStep(`Lightning CSS autoprefixed & minified CSS. Saved ${totalSavedKB} KB.`, 'SUCCESS');
     logStepDone('CSS processing complete.');
   } catch (err) {
     logStep(`CSS processing FAILED: ${err.message}`, 'FAIL');
@@ -186,87 +137,37 @@ async function processCSS() {
   }
 }
 
+// Process JS: Bundle & Minify using esbuild (with tree shaking disabled)
 async function processJS() {
-  logSection('JS MINIFICATION & TREE SHAKING (esbuild)');
+  logSection('JS MINIFICATION (esbuild, without tree shaking)');
   try {
     const originalSize = Buffer.byteLength(js, 'utf8');
-    logStep('Starting esbuild JS processing...');
+    logStep('Starting esbuild JS processing for bundling and minification...');
 
-    // Write JS to temp file for esbuild input
+    // Write JS code to a temporary file for esbuild input
     const tempJsPath = path.join(ASSETS_DIR, 'script-tmp.js');
     fs.writeFileSync(tempJsPath, js, 'utf8');
 
-    // Unminified bundle with tree shaking
-    const UNMIN_JS_TS = path.join(ASSETS_DIR, 'script.unmin.treeshake.js');
-    // Unminified bundle without tree shaking
-    const UNMIN_JS_NOTS = path.join(ASSETS_DIR, 'script.unmin.nots.js');
-
-    // With tree shaking (unminified)
+    // Build JS using esbuild without tree shaking
     await esbuild.build({
       entryPoints: [tempJsPath],
-      outfile: UNMIN_JS_TS,
-      minify: false,
+      outfile: OUT_JS,
       bundle: true,
-      treeShaking: true,
-      format: 'iife',
-      target: ['es2017'],
-      write: true,
-      logLevel: 'silent'
-    });
-
-    // Without tree shaking (unminified)
-    await esbuild.build({
-      entryPoints: [tempJsPath],
-      outfile: UNMIN_JS_NOTS,
-      minify: false,
-      bundle: true,
+      minify: true,
       treeShaking: false,
       format: 'iife',
       target: ['es2017'],
-      write: true,
-      logLevel: 'silent'
+      logLevel: 'silent',
+      write: true
     });
 
-    // DIFF BLOCK: Log removed code (unminified)
-    const tsContent = fs.readFileSync(UNMIN_JS_TS, 'utf8');
-    const notsContent = fs.readFileSync(UNMIN_JS_NOTS, 'utf8');
-    const changes = cssDiff.diffLines(notsContent, tsContent);
-    let jsCodeRemoved = 0;
-    changes.forEach(part => {
-      if (part.removed && part.value.trim()) {
-        jsCodeRemoved++;
-        logRemovedBlock('JS code removed', part.value);
-      }
-    });
-    if (jsCodeRemoved) {
-      logStep('esbuild tree shaking removed unused JS code.', 'SUCCESS');
-    } else {
-      logStep('No unused JS code was found by esbuild tree shaking.', 'SUCCESS');
-    }
-    logStepDone('JS tree shaking step finished.');
-
-    // Now minify only the tree-shaken JS for production
-    logStep('Minifying tree-shaken JS with esbuild...');
-    await esbuild.build({
-      entryPoints: [UNMIN_JS_TS],
-      outfile: OUT_JS,
-      minify: true,
-      bundle: false,
-      write: true,
-      logLevel: 'silent'
-    });
-
-    // Calculate actual KB saved
     const minifiedSize = fs.statSync(OUT_JS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
+    logStep(`JS minified with esbuild. Saved ${totalSavedKB} KB.`, 'SUCCESS');
 
-    // Clean up
+    // Clean up temporary file
     fs.unlinkSync(tempJsPath);
-    fs.unlinkSync(UNMIN_JS_TS);
-    fs.unlinkSync(UNMIN_JS_NOTS);
-
-    logStep(`JS minified. Saved ${totalSavedKB} KB.`, 'SUCCESS');
-    logStepDone('JS processing complete.');
+    logStepDone('JS processing complete with esbuild.');
   } catch (err) {
     logStep(`JS processing FAILED: ${err.message}`, 'FAIL');
     throw err;
@@ -283,7 +184,7 @@ async function processJS() {
     document.querySelectorAll('style').forEach(tag => tag.remove());
     if (scriptTag) scriptTag.remove();
 
-    // Add <link> and <script> references
+    // Add new <link> and <script> references for the build output
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'assets/style.min.css';
@@ -295,25 +196,24 @@ async function processJS() {
     document.body.appendChild(script);
 
     logSection('MINIFY HTML');
-    const originalSize = Buffer.byteLength(dom.serialize(), 'utf8');
+    const originalHtmlSize = Buffer.byteLength(dom.serialize(), 'utf8');
     const finalHtml = await htmlMinify(dom.serialize(), {
       collapseWhitespace: true,
       removeComments: true,
       minifyCSS: false,
       minifyJS: false
     });
+    const minifiedHtmlSize = Buffer.byteLength(finalHtml, 'utf8');
+    const savedHtmlKB = ((originalHtmlSize - minifiedHtmlSize) / 1024).toFixed(2);
 
-    const minifiedSize = Buffer.byteLength(finalHtml, 'utf8');
-    const savedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
-
-    // Write output HTML
+    // Write the final HTML output
     fs.writeFileSync(OUT_HTML, finalHtml, 'utf8');
-    logStep(`HTML minified and index.html written. Saved ${savedKB} KB.`, 'SUCCESS');
+    logStep(`HTML minified and index.html written. Saved ${savedHtmlKB} KB.`, 'SUCCESS');
     logStepDone('HTML minification done.');
 
     logSection('BUILD COMPLETE');
 
-    // Calculate total original and optimized sizes
+    // Calculate total sizes for reporting
     const srcHtmlSize = fs.statSync(SRC_HTML).size;
     const srcCssSize = Buffer.byteLength(css, 'utf8');
     const srcJsSize = Buffer.byteLength(js, 'utf8');
