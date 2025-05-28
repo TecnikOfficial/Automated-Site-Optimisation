@@ -86,7 +86,7 @@ Ability to auto minify images in the `assets` folder.<br>
 Click on [![Use this Template](https://img.shields.io/badge/Use%20this%20Template-olivegreen.svg)](https://github.com/new?template_name=Automated-Site-Optimiser&template_owner=TecnikOfficial) button and make necessary changes and upload your site code in `src/index.html` and get optimized site files in seconds.<br>
 If you run into build errors or want to see what’s happening behind the scenes, you can always check the `build-report.logs` for more information.
 
-✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f
+✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f67a29baf5537be7bc?nocache=1)
 
 ---
 
