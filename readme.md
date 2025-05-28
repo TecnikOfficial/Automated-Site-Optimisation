@@ -42,7 +42,7 @@ npm run optimise-pro
 ### Balanced (Default)
 - **Command:** 
 ```
-npm run optimise` or `npm run build
+npm run optimise
 ```
 - **Description:** This is the default mode that balances optimization and build time, suitable for most use cases.
 
