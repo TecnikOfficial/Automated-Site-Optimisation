@@ -1,4 +1,4 @@
-BUILD STARTED AT: 2025-05-25 04:58 PM 
+BUILD STARTED AT: 2025-05-28 10:24 PM 
 
 ========== DEPENDENCY LOADING ==========
 [SUCCESS] Dependency loaded: jsdom
@@ -7,7 +7,8 @@ BUILD STARTED AT: 2025-05-25 04:58 PM
 [SUCCESS] Dependency loaded: html-minifier-terser
 [SUCCESS] Dependency loaded: diff
 [SUCCESS] Dependency loaded: lightningcss
----- Step completed in 3.94s: All dependencies loaded.
+[SUCCESS] Dependency loaded: terser
+---- Step completed in 2.68s: All dependencies loaded.
 
 ========== ASSET DIRECTORY CHECK ==========
 [INFO] Assets directory exists or created.
@@ -41,29 +42,22 @@ height: 100%;
 ========== AUTOPREFIX & MINIFY CSS (Lightning CSS) ==========
 [INFO] Running Lightning CSS for autoprefixing and minification...
 [SUCCESS] Lightning CSS autoprefixed & minified CSS. Saved 0.71 KB.
----- Step completed in 0.05s: Lightning CSS step finished.
+---- Step completed in 0.01s: Lightning CSS step finished.
 [INFO] Temporary files cleaned up.
 ---- Step completed: CSS processing complete.
 
-========== JS MINIFICATION & TREE SHAKING (esbuild) ==========
-[INFO] Starting esbuild JS processing...
-[REMOVED] JS code removed:
-function changeText() {
-    const textElement = document.getElementById("useless-js");
-    currentTextIndex = currentTextIndex < textOptions.length ? currentTextIndex : 0;
-    textElement.textContent = textOptions[currentTextIndex];
-    currentTextIndex++;
-  }
-[SUCCESS] esbuild tree shaking removed unused JS code.
----- Step completed in 0.17s: JS tree shaking step finished.
-[INFO] Minifying tree-shaken JS with esbuild...
-[SUCCESS] JS minified. Saved 0.82 KB.
----- Step completed: JS processing complete.
+========== JS MINIFICATION & TREE SHAKING (esbuild + Terser) ==========
+[INFO] Starting esbuild JS processing for tree shaking...
+[INFO] Esbuild tree shaking complete.
+[INFO] Terser: Starting compression & mangling on tree-shaken code...
+[INFO] Terser: Compression & mangling completed successfully.
+[SUCCESS] JS minified with Terser. Saved 0.83 KB.
+---- Step completed in 0.21s: JS processing complete with Terser.
 
 ========== MINIFY HTML ==========
 [SUCCESS] HTML minified and index.html written. Saved 1.05 KB.
----- Step completed in 0.06s: HTML minification done.
+---- Step completed in 0.05s: HTML minification done.
 
 ========== BUILD COMPLETE ==========
 [SUCCESS] All build steps finished successfully. You saved 6.59 KB in total.
----- All Steps completed in 4.88s: Build finished.
+---- All Steps completed in 3.68s: Build finished.

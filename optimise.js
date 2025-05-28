@@ -60,6 +60,7 @@ function requireWithLog(dep) {
   }
 }
 
+// Dependency loading
 logSection('DEPENDENCY LOADING');
 const { JSDOM } = requireWithLog('jsdom');
 const esbuild = requireWithLog('esbuild');
@@ -67,6 +68,7 @@ const { PurgeCSS } = requireWithLog('purgecss');
 const { minify: htmlMinify } = requireWithLog('html-minifier-terser');
 const cssDiff = requireWithLog('diff');
 const lightningcss = requireWithLog('lightningcss');
+const Terser = requireWithLog('terser');
 logStepDone('All dependencies loaded.');
 
 const SRC_HTML = path.join(__dirname, 'src', 'index.html');
@@ -172,7 +174,7 @@ async function processCSS() {
 
     const minifiedSize = fs.statSync(OUT_CSS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
-    logStep(`Lightning CSS autoprefixed & minified CSS. Saved ${(totalSavedKB)} KB.`, 'SUCCESS');
+    logStep(`Lightning CSS autoprefixed & minified CSS. Saved ${totalSavedKB} KB.`, 'SUCCESS');
     logStepDone('Lightning CSS step finished.');
 
     // Clean up temp files
@@ -187,21 +189,17 @@ async function processCSS() {
 }
 
 async function processJS() {
-  logSection('JS MINIFICATION & TREE SHAKING (esbuild)');
+  logSection('JS MINIFICATION & TREE SHAKING (esbuild + Terser)');
   try {
     const originalSize = Buffer.byteLength(js, 'utf8');
-    logStep('Starting esbuild JS processing...');
+    logStep('Starting esbuild JS processing for tree shaking...');
 
-    // Write JS to temp file for esbuild input
+    // Write JS to a temp file for esbuild input
     const tempJsPath = path.join(ASSETS_DIR, 'script-tmp.js');
     fs.writeFileSync(tempJsPath, js, 'utf8');
 
-    // Unminified bundle with tree shaking
+    // Generate a tree-shaken bundle (unminified)
     const UNMIN_JS_TS = path.join(ASSETS_DIR, 'script.unmin.treeshake.js');
-    // Unminified bundle without tree shaking
-    const UNMIN_JS_NOTS = path.join(ASSETS_DIR, 'script.unmin.nots.js');
-
-    // With tree shaking (unminified)
     await esbuild.build({
       entryPoints: [tempJsPath],
       outfile: UNMIN_JS_TS,
@@ -214,58 +212,35 @@ async function processJS() {
       logLevel: 'silent'
     });
 
-    // Without tree shaking (unminified)
-    await esbuild.build({
-      entryPoints: [tempJsPath],
-      outfile: UNMIN_JS_NOTS,
-      minify: false,
-      bundle: true,
-      treeShaking: false,
-      format: 'iife',
-      target: ['es2017'],
-      write: true,
-      logLevel: 'silent'
+    logStep('Esbuild tree shaking complete.');
+
+    // Now let Terser perform compression, mangling, and minification
+    logStep('Terser: Starting compression & mangling on tree-shaken code...');
+    const treeShakenContent = fs.readFileSync(UNMIN_JS_TS, 'utf8');
+    const terserResult = await Terser.minify(treeShakenContent, {
+      compress: {
+        // You can add more aggressive options here if needed (e.g., drop_console: true, passes: 2)
+      },
+      mangle: true
     });
 
-    // DIFF BLOCK: Log removed code (unminified)
-    const tsContent = fs.readFileSync(UNMIN_JS_TS, 'utf8');
-    const notsContent = fs.readFileSync(UNMIN_JS_NOTS, 'utf8');
-    const changes = cssDiff.diffLines(notsContent, tsContent);
-    let jsCodeRemoved = 0;
-    changes.forEach(part => {
-      if (part.removed && part.value.trim()) {
-        jsCodeRemoved++;
-        logRemovedBlock('JS code removed', part.value);
-      }
-    });
-    if (jsCodeRemoved) {
-      logStep('esbuild tree shaking removed unused JS code.', 'SUCCESS');
-    } else {
-      logStep('No unused JS code was found by esbuild tree shaking.', 'SUCCESS');
+    if (terserResult.error) {
+      logStep(`Terser minification FAILED: ${terserResult.error}`, 'FAIL');
+      throw terserResult.error;
     }
-    logStepDone('JS tree shaking step finished.');
+    logStep('Terser: Compression & mangling completed successfully.');
 
-    // Now minify only the tree-shaken JS for production
-    logStep('Minifying tree-shaken JS with esbuild...');
-    await esbuild.build({
-      entryPoints: [UNMIN_JS_TS],
-      outfile: OUT_JS,
-      minify: true,
-      bundle: false,
-      write: true,
-      logLevel: 'silent'
-    });
+    // Write the Terser-minified code to the output file
+    fs.writeFileSync(OUT_JS, terserResult.code, 'utf8');
 
-    // Calculate actual KB saved
     const minifiedSize = fs.statSync(OUT_JS).size;
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
+    logStep(`JS optimised . Saved ${totalSavedKB} KB.`, 'SUCCESS');
 
-    // Clean up
+    // Clean up temporary files
     fs.unlinkSync(tempJsPath);
     fs.unlinkSync(UNMIN_JS_TS);
-    fs.unlinkSync(UNMIN_JS_NOTS);
 
-    logStep(`JS minified. Saved ${totalSavedKB} KB.`, 'SUCCESS');
     logStepDone('JS processing complete.');
   } catch (err) {
     logStep(`JS processing FAILED: ${err.message}`, 'FAIL');
