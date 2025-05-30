@@ -294,7 +294,6 @@ async function processJS() {
 
     const script = document.createElement('script');
     script.src = 'assets/script.min.js';
-    script.defer = true;
     document.body.appendChild(script);
 
     logSection('MINIFY HTML');
