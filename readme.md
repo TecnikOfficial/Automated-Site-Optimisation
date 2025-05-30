@@ -42,7 +42,7 @@ npm run optimise-pro
 ### Balanced (Default)
 - **Command:** 
 ```
-npm run optimise` or `npm run build
+npm run optimise
 ```
 - **Description:** This is the default mode that balances optimization and build time, suitable for most use cases.
 
@@ -51,7 +51,7 @@ npm run optimise` or `npm run build
 ```
 npm run optimise-lite
 ```
-- **Description:** This mode processes files without tree-shaking or PurgeCSS, making it faster but less aggressive in optimization.
+- **Description:** This mode processes files without tree-shaking or PurgeCSS, making it safer but less aggressive in optimization.
 
 ---
 
@@ -86,4 +86,42 @@ Ability to auto minify images in the `assets` folder.<br>
 Click on [![Use this Template](https://img.shields.io/badge/Use%20this%20Template-olivegreen.svg)](https://github.com/new?template_name=Automated-Site-Optimiser&template_owner=TecnikOfficial) button and make necessary changes and upload your site code in `src/index.html` and get optimized site files in seconds.<br>
 If you run into build errors or want to see what’s happening behind the scenes, you can always check the `build-report.logs` for more information.
 
-✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f
+✅ **SCAN RESULTS:** [Optimise.js](https://www.virustotal.com/gui/url/11075fbad0d7e9253727b287dc41af51022d900a726745f67a29baf5537be7bc?nocache=1)
+
+---
+
+## 📄 License
+
+This project is licensed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+
+You are free to use, modify, share, and use this project for commercial purposes, as long as you give appropriate credit.
+
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+
+See the [LICENSE](LICENSE) file for more details.
+
+---
+
+## 🙏 Credits / Dependencies Used
+
+This project is powered by these open-source tools:
+
+- [esbuild](https://www.npmjs.com/package/esbuild) — Ultra-fast bundler and minifier for JavaScript and CSS.
+- [purgecss](https://www.npmjs.com/package/purgecss) — Removes unused CSS for optimized production builds.
+- [lightningcss](https://www.npmjs.com/package/lightningcss) — An extremely fast CSS parser, transformer, minifier and prefixer.
+- [terser](https://www.npmjs.com/package/terser) — Minifies , mangles & compress JS.
+- [html-minifier-terser](https://www.npmjs.com/package/html-minifier-terser) — Minifies and compresses HTML files.
+- [Node.js](https://nodejs.org/) — JavaScript runtime powering the script.
+- [GitHub Actions](https://github.com/features/actions) — For workflow automation and deployment.
+
+Special thanks to the open-source community!
+
+---
+
+## 💖 Support the Project
+
+If you appreciate this project and want to support its development, consider making a donation:
+
+[![Support the Project](https://img.shields.io/badge/Support%20the%20Project-Donate-brightgreen)](https://coindrop.to/tecnik)
+
+[![Speed Test](assets/img/speedtest.png)](https://pagespeed.web.dev/analysis?url=https://tecnikofficial.github.io/Automated-Site-Optimiser)
