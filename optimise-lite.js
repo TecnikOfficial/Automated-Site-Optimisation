@@ -9,8 +9,7 @@ const now = new Date();
 let hours = now.getHours();
 const minutes = now.getMinutes().toString().padStart(2, '0');
 const ampm = hours >= 12 ? 'PM' : 'AM';
-hours = hours % 12;
-hours = hours ? hours : 12;
+hours = hours % 12 || 12;
 const datePart = now.toISOString().slice(0, 10);
 const timePart = `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
 fs.appendFileSync(LOG_FILE, `BUILD STARTED AT: ${datePart} ${timePart}\n`, 'utf8');
@@ -60,7 +59,7 @@ function requireWithLog(dep) {
   }
 }
 
-// Dependency loading (Purged: PurgeCSS and Terser removed)
+// Dependency loading
 logSection('DEPENDENCY LOADING');
 const { JSDOM } = requireWithLog('jsdom');
 const esbuild = requireWithLog('esbuild');
@@ -103,9 +102,12 @@ const css = styleTags.map(tag => tag.textContent).join('\n');
 logStep(`Extracted CSS from ${styleTags.length} <style> tag(s).`);
 logStepDone('Inline CSS extraction done.');
 
-// Extract JS from the first <script> tag
-const scriptTag = document.querySelector('script');
-const js = scriptTag ? scriptTag.textContent : '';
+// Extract inline JS from body only
+logSection('EXTRACT INLINE JS FROM BODY');
+const bodyScripts = [...document.body.querySelectorAll('script:not([src])')];
+const js = bodyScripts.map(tag => tag.textContent).join('\n');
+logStep(`Extracted JS from ${bodyScripts.length} inline <script> tag(s) inside <body>.`);
+logStepDone('Inline JS extraction done.');
 
 // Process CSS: Autoprefix & Minify (using Lightning CSS only)
 async function processCSS() {
@@ -137,18 +139,16 @@ async function processCSS() {
   }
 }
 
-// Process JS: Bundle & Minify using esbuild (with tree shaking disabled)
+// Process JS: Bundle & Minify using esbuild (no tree shaking)
 async function processJS() {
   logSection('JS MINIFICATION (esbuild, without tree shaking)');
   try {
     const originalSize = Buffer.byteLength(js, 'utf8');
     logStep('Starting esbuild JS processing for bundling and minification...');
 
-    // Write JS code to a temporary file for esbuild input
     const tempJsPath = path.join(ASSETS_DIR, 'script-tmp.js');
     fs.writeFileSync(tempJsPath, js, 'utf8');
 
-    // Build JS using esbuild without tree shaking
     await esbuild.build({
       entryPoints: [tempJsPath],
       outfile: OUT_JS,
@@ -165,7 +165,6 @@ async function processJS() {
     const totalSavedKB = ((originalSize - minifiedSize) / 1024).toFixed(2);
     logStep(`JS minified with esbuild. Saved ${totalSavedKB} KB.`, 'SUCCESS');
 
-    // Clean up temporary file
     fs.unlinkSync(tempJsPath);
     logStepDone('JS processing complete with esbuild.');
   } catch (err) {
@@ -180,11 +179,9 @@ async function processJS() {
     await processCSS();
     await processJS();
 
-    // Remove old <style> and <script> tags from DOM (for minified HTML output)
     document.querySelectorAll('style').forEach(tag => tag.remove());
-    if (scriptTag) scriptTag.remove();
+    bodyScripts.forEach(tag => tag.remove());
 
-    // Add new <link> and <script> references for the build output
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'assets/style.min.css';
@@ -205,14 +202,12 @@ async function processJS() {
     const minifiedHtmlSize = Buffer.byteLength(finalHtml, 'utf8');
     const savedHtmlKB = ((originalHtmlSize - minifiedHtmlSize) / 1024).toFixed(2);
 
-    // Write the final HTML output
     fs.writeFileSync(OUT_HTML, finalHtml, 'utf8');
     logStep(`HTML minified and index.html written. Saved ${savedHtmlKB} KB.`, 'SUCCESS');
     logStepDone('HTML minification done.');
 
     logSection('BUILD COMPLETE');
 
-    // Calculate total sizes for reporting
     const srcHtmlSize = fs.statSync(SRC_HTML).size;
     const srcCssSize = Buffer.byteLength(css, 'utf8');
     const srcJsSize = Buffer.byteLength(js, 'utf8');
@@ -222,7 +217,6 @@ async function processJS() {
     const optCssSize = fs.statSync(OUT_CSS).size;
     const optJsSize = fs.statSync(OUT_JS).size;
     const totalOptimized = optHtmlSize + optCssSize + optJsSize;
-
     const totalSaved = totalOriginal - totalOptimized;
     const totalSavedKB = (totalSaved / 1024).toFixed(2);
 
