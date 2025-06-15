@@ -1,4 +1,4 @@
-BUILD STARTED AT: 2025-06-13 09:55 PM
+BUILD STARTED AT: 2025-06-15 11:53 AM 
 
 ========== DEPENDENCY LOADING ==========
 [SUCCESS] Dependency loaded: jsdom
@@ -7,8 +7,7 @@ BUILD STARTED AT: 2025-06-13 09:55 PM
 [SUCCESS] Dependency loaded: html-minifier-terser
 [SUCCESS] Dependency loaded: diff
 [SUCCESS] Dependency loaded: lightningcss
-[SUCCESS] Dependency loaded: terser
----- Step completed in 2.81s: All dependencies loaded.
+---- Step completed in 0.42s: All dependencies loaded.
 
 ========== ASSET DIRECTORY CHECK ==========
 [INFO] Assets directory exists or created.
@@ -20,15 +19,15 @@ BUILD STARTED AT: 2025-06-13 09:55 PM
 
 ========== EXTRACT INLINE CSS ==========
 [INFO] Extracted CSS from 1 <style> tag(s).
----- Step completed in 0.01s: Inline CSS extraction done.
+---- Step completed in 0.00s: Inline CSS extraction done.
 
 ========== EXTRACT INLINE JS FROM BODY ==========
-[INFO] Extracted JS from 1 <script> tag(s) in <body>.
----- Step completed in 0.01s: Inline JS extraction done.
+[INFO] Extracted JS from 1 inline <script> tag(s) inside <body>.
+---- Step completed in 0.00s: Inline JS extraction done.
 
 ========== GENERATE TEMP FILES FOR PURGECSS ==========
 [INFO] Temporary HTML and CSS files for PurgeCSS created.
----- Step completed in 0.11s: Temp file generation done.
+---- Step completed in 0.02s: Temp file generation done.
 
 ========== BUILD START ==========
 
@@ -41,16 +40,15 @@ height: 100%;
   backface-visibility: hidden;
 }
 [SUCCESS] PurgeCSS removed unused CSS code.
----- Step completed in 0.08s: PurgeCSS step finished.
+---- Step completed in 0.02s: PurgeCSS step finished.
 
 ========== AUTOPREFIX & MINIFY CSS (Lightning CSS) ==========
-[SUCCESS] CSS saved 0.71 KB.
----- Step completed in 0.01s: Lightning CSS step finished.
+[SUCCESS] Lightning CSS processed. Saved 0.71 KB.
+---- Step completed in 0.00s: Lightning CSS step finished.
 [INFO] Temporary files cleaned up.
 ---- Step completed: CSS processing complete.
 
-========== JS MINIFICATION & TREE SHAKING (esbuild + Terser) ==========
-[INFO] Running esbuild...
+========== JS MINIFICATION & TREE SHAKING (esbuild) ==========
 [REMOVED] JS code removed:
 function changeText() {
     const textElement = document.getElementById("useless-js");
@@ -59,14 +57,14 @@ function changeText() {
     currentTextIndex++;
   }
 [SUCCESS] Tree shaking removed unused JS code.
-[INFO] Running Terser for minification...
-[SUCCESS] JS saved 0.83 KB.
----- Step completed in 0.23s: JS processing complete.
+---- Step completed in 0.01s: JS tree shaking step finished.
+[SUCCESS] JS minified. Saved 0.82 KB.
+---- Step completed: JS processing complete.
 
 ========== MINIFY HTML ==========
-[SUCCESS] HTML saved 1.05 KB.
----- Step completed in 0.04s: HTML minification done.
+[SUCCESS] HTML minified. Saved 1.05 KB.
+---- Step completed in 0.01s: HTML minification done.
 
 ========== BUILD COMPLETE ==========
-[SUCCESS] Build complete. Saved 6.60 KB.
----- All Steps completed in 3.74s: Build finished.
+[SUCCESS] Build finished. Total saved: 6.37 KB.
+---- All Steps completed in 0.58s: Build finished.
